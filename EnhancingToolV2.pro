@@ -18,7 +18,10 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
-RC_ICONS = "EnhancingToolV2.ico"
+RESOURCES += \
+    qdarkstyle/dark/darkstyle.qrc
+
+RC_ICONS = EnhancingToolV2.ico
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

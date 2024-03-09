@@ -9,3 +9,6 @@
 
 31/10/2023
 - Fix the resizing issue for folders
+
+12/11/2023
+- Update to a new dark theme

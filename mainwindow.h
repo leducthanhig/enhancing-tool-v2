@@ -68,8 +68,8 @@ private slots:
     void closeEvent(QCloseEvent *event);
     void on_comboBox_Tool_currentIndexChanged(int index);
     void on_comboBox_Res_currentIndexChanged(int index);
+    void on_comboBox_Engine_currentIndexChanged(int index);
     void on_comboBox_Model_currentIndexChanged(int index);
-    void on_comboBox_Ver_currentIndexChanged(int index);
     void on_comboBox_Fps_currentIndexChanged(int index);
     void on_lineEdit_Output_textChanged(const QString text);
     void on_lineEdit_Res_editingFinished();

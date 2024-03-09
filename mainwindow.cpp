@@ -107,11 +107,11 @@ void MainWindow::setVisible_ViewState(int para) {
 }
 
 void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
-    ui->comboBox_Model->clear();
+    ui->comboBox_Engine->clear();
 
     switch (index) {
     case 0:
-        ui->comboBox_Model->addItems(QStringList{"RealESRGAN-NCNN-Vulkan", "RealCUGAN-NCNN-Vulkan", "RealSR-NCNN-Vulkan"});
+        ui->comboBox_Engine->addItems(QStringList{"RealESRGAN-NCNN-Vulkan", "RealCUGAN-NCNN-Vulkan", "RealSR-NCNN-Vulkan"});
 
         if (type == "") {
             setEnabled_Res(0);
@@ -122,7 +122,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
             setEnabled_CRF(0);
             setEnabled_Fps(0);
         } else if (type == "dir") {
-            ui->comboBox_Ver->setCurrentIndex(4);
+            ui->comboBox_Model->setCurrentIndex(4);
             setEnabled_Res(0);
             setEnabled_Segment(0);
             setEnabled_TileSize(1);
@@ -131,7 +131,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
             setEnabled_CRF(0);
             setEnabled_Fps(0);
         } else if (type == "image") {
-            ui->comboBox_Ver->setCurrentIndex(4);
+            ui->comboBox_Model->setCurrentIndex(4);
             setEnabled_Res(1);
             setEnabled_Segment(0);
             setEnabled_TileSize(1);
@@ -140,7 +140,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
             setEnabled_CRF(0);
             setEnabled_Fps(0);
         } else {
-            ui->comboBox_Ver->setCurrentIndex(2);
+            ui->comboBox_Model->setCurrentIndex(2);
             setEnabled_Res(1);
             setEnabled_Segment(1);
             setEnabled_TileSize(1);
@@ -151,8 +151,8 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
         }
         break;
     case 1:
-        ui->comboBox_Model->addItems(QStringList{"RIFE-NCNN-Vulkan", "IFRNet-NCNN-Vulkan"});
-        ui->comboBox_Ver->setCurrentIndex(11);
+        ui->comboBox_Engine->addItems(QStringList{"RIFE-NCNN-Vulkan", "IFRNet-NCNN-Vulkan"});
+        ui->comboBox_Model->setCurrentIndex(11);
         setEnabled_Res(0);
         setEnabled_Segment(1);
         setEnabled_TileSize(0);
@@ -196,8 +196,8 @@ void MainWindow::setup() {
 
         ui->comboBox_Tool->setCurrentIndex(0);
         ui->comboBox_Tool->setEnabled(0);
-        ui->comboBox_Model->setCurrentIndex(0);
-        ui->comboBox_Ver->setCurrentIndex(2);
+        ui->comboBox_Engine->setCurrentIndex(0);
+        ui->comboBox_Model->setCurrentIndex(2);
         setEnabled_Res(0);
         setEnabled_OutFormat(0);
         setEnabled_Segment(0);
@@ -219,8 +219,8 @@ void MainWindow::setup() {
 
             ui->comboBox_Tool->setCurrentIndex(0);
             ui->comboBox_Tool->setEnabled(0);
-            ui->comboBox_Model->setCurrentIndex(0);
-            ui->comboBox_Ver->setCurrentIndex(2);
+            ui->comboBox_Engine->setCurrentIndex(0);
+            ui->comboBox_Model->setCurrentIndex(2);
             setEnabled_Res(1);
             ui->comboBox_Res->setCurrentIndex(0);
             ui->comboBox_Res->setCurrentIndex(4);
@@ -237,16 +237,16 @@ void MainWindow::setup() {
 
             ui->comboBox_Tool->setEnabled(1);
             if (ui->comboBox_Tool->currentIndex() == 0) {
+                ui->comboBox_Engine->setCurrentIndex(0);
                 ui->comboBox_Model->setCurrentIndex(0);
-                ui->comboBox_Ver->setCurrentIndex(0);
                 setEnabled_Res(1);
                 ui->comboBox_Res->setCurrentIndex(0);
                 ui->comboBox_Res->setCurrentIndex(2);
                 setEnabled_TileSize(1);
                 setEnabled_Fps(0);
             } else {
-                ui->comboBox_Model->setCurrentIndex(0);
-                ui->comboBox_Ver->setCurrentIndex(11);
+                ui->comboBox_Engine->setCurrentIndex(0);
+                ui->comboBox_Model->setCurrentIndex(11);
                 setEnabled_Res(0);
                 setEnabled_TileSize(0);
                 setEnabled_Fps(1);
@@ -341,7 +341,7 @@ void MainWindow::readMetadata() {
 void MainWindow::on_pushButton_TileSize_Inc_released() {
     TileSize = ui->lineEdit_TileSize->text().QString::toInt()*2;
     if (TileSize == 0) TileSize = 32;
-    else if (TileSize == 65536) ui->pushButton_TileSize_Inc->setEnabled(0);
+    else if (TileSize == 8192) ui->pushButton_TileSize_Inc->setEnabled(0);
     ui->pushButton_TileSize_Dec->setEnabled(1);
     ui->lineEdit_TileSize->setText(QString::number(TileSize, 10));
 }
@@ -360,39 +360,39 @@ void MainWindow::readModelName() {
     QDir modelsDir = QDir(currentPath + "/realesrgan-ncnn-vulkan/models");
     foreach (QString model, modelsDir.entryList()) {
         if (model.contains(".bin") && model[1] == 'x') {
-            ui->comboBox_Ver->addItem(model.remove(0, 3).remove(".bin"));
+            ui->comboBox_Model->addItem(model.remove(0, 3).remove(".bin"));
         }
     }
 }
 
-void MainWindow::on_comboBox_Model_currentIndexChanged(int index) {
-    ui->comboBox_Ver->clear();
+void MainWindow::on_comboBox_Engine_currentIndexChanged(int index) {
+    ui->comboBox_Model->clear();
     setEnabled_Denoise(0);
     setEnabled_SyncGap(0);
     if (ui->comboBox_Tool->currentIndex() == 0) {
         switch (index) {
         case 0:
-            ui->comboBox_Ver->addItems(QStringList{"realesr-animevideov3", "realesrganv2-animevideo", "realesrgan-x4plus", "realesrgan-x4plus-anime", "realesr-general-x4v3", "realesr-general-wdn-x4v3", "realesrnet-x4plus"});
+            ui->comboBox_Model->addItems(QStringList{"realesr-animevideov3", "realesrganv2-animevideo", "realesrgan-x4plus", "realesrgan-x4plus-anime", "realesr-general-x4v3", "realesr-general-wdn-x4v3", "realesrnet-x4plus"});
             readModelName();
             break;
         case 1:
-            ui->comboBox_Ver->addItems(QStringList{"models-pro", "models-se"});
+            ui->comboBox_Model->addItems(QStringList{"models-pro", "models-se"});
             setEnabled_Denoise(1);
             setEnabled_SyncGap(1);
             break;
         case 2:
-            ui->comboBox_Ver->addItems(QStringList{"models-DF2K_JPEG", "models-DF2K"});
+            ui->comboBox_Model->addItems(QStringList{"models-DF2K_JPEG", "models-DF2K"});
             break;
         }
     } else {
         switch (index) {
         case 0:
-            ui->comboBox_Ver->addItems(QStringList{"rife", "rife-anime", "rife-HD", "rife-UHD", "rife-v2", "rife-v2.3", "rife-v2.4", "rife-v3.0", "rife-v3.1", "rife-v4", "rife-v4.1", "rife-v4.6"});
-            ui->comboBox_Ver->setCurrentIndex(11);
+            ui->comboBox_Model->addItems(QStringList{"rife", "rife-anime", "rife-HD", "rife-UHD", "rife-v2", "rife-v2.3", "rife-v2.4", "rife-v3.0", "rife-v3.1", "rife-v4", "rife-v4.1", "rife-v4.6"});
+            ui->comboBox_Model->setCurrentIndex(11);
             break;
         case 1:
-            ui->comboBox_Ver->addItems(QStringList{"IFRNet_GoPro", "IFRNet_L_GoPro", "IFRNet_S_GoPro", "IFRNet_Vimeo90K", "IFRNet_L_Vimeo90K", "IFRNet_S_Vimeo90K"});
-            ui->comboBox_Ver->setCurrentIndex(3);
+            ui->comboBox_Model->addItems(QStringList{"IFRNet_GoPro", "IFRNet_L_GoPro", "IFRNet_S_GoPro", "IFRNet_Vimeo90K", "IFRNet_L_Vimeo90K", "IFRNet_S_Vimeo90K"});
+            ui->comboBox_Model->setCurrentIndex(3);
             break;
         }
     }
@@ -464,17 +464,12 @@ void MainWindow::on_pushButton_GpuID_released() {
 
     if (output.contains("invalid gpu device")) {
         QMessageBox msg(QMessageBox::Critical, "Warning!!!", "Please update your graphic driver!\n", QMessageBox::Ok);
-        msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                          "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                          "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+        msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
     } else {
         QStringList list = getGPUID(output);
-        QMessageBox msg(QMessageBox::NoIcon, "GPU ID", '\n' + list.join("\t\n\n") + "\n\n[-1] Central Processing Unit\t\n",
-                        QMessageBox::Close);
-        msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                          "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                          "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+        QMessageBox msg(QMessageBox::NoIcon, "GPU ID", '\n' + list.join("\t\n\n") + "\n\n[-1] Central Processing Unit\t\n", QMessageBox::Close);
+        msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         ui->comboBox_GpuID->clear();
         for (int i = 0; i < list.length(); i++)
@@ -516,9 +511,7 @@ void MainWindow::on_lineEdit_Output_textChanged(const QString text) {
 
 bool ConfirmToStop() {
     QMessageBox msg(QMessageBox::Warning, "Confirmation", "Do you want to stop current process?\n", QMessageBox::Yes | QMessageBox::No);
-    msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                     "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                     "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+    msg.setStyleSheet("QPushButton{height: 25px}");
     if(msg.exec() == QMessageBox::Yes) return true;
     else return false;
 }
@@ -628,9 +621,9 @@ int MainWindow::Decoding(QFileInfo file, int numFrame) {
 
 QString MainWindow::getParameter(QString para) {
     if (para == "ver") {
-        switch (ui->comboBox_Model->currentIndex()) {
+        switch (ui->comboBox_Engine->currentIndex()) {
         case 0:
-            switch (ui->comboBox_Ver->currentIndex()) {
+            switch (ui->comboBox_Model->currentIndex()) {
             case 0:
             {
                 QString x = " -s ";
@@ -651,7 +644,7 @@ QString MainWindow::getParameter(QString para) {
                     resizingNeeded = false;
                     x += ui->comboBox_Res->currentText().remove('x');
                 }
-                return " -n " + ui->comboBox_Ver->currentText() + x;
+                return " -n " + ui->comboBox_Model->currentText() + x;
             }
             case 1:
             {
@@ -676,7 +669,7 @@ QString MainWindow::getParameter(QString para) {
                     resizingNeeded = false;
                     x += ui->comboBox_Res->currentText() + " -s " + ui->comboBox_Res->currentText().remove('x');
                 }
-                return " -n " + ui->comboBox_Ver->currentText() + x;
+                return " -n " + ui->comboBox_Model->currentText() + x;
             }
             case 2 ... 6:
                 if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
@@ -684,12 +677,12 @@ QString MainWindow::getParameter(QString para) {
                     resizingNeeded = true;
                     scale = 4;
                 }
-                return " -n " + ui->comboBox_Ver->currentText();
+                return " -n " + ui->comboBox_Model->currentText();
             default:
                 QString x, modelName;
                 QDir modelsDir = QDir(currentPath + "/realesrgan-ncnn-vulkan/models");
                 foreach (QString model, modelsDir.entryList()) {
-                    if (model.contains(".bin") && model.contains(ui->comboBox_Ver->currentText())) {
+                    if (model.contains(".bin") && model.contains(ui->comboBox_Model->currentText())) {
                         modelName = model.remove(".bin");
                     }
                 }
@@ -721,7 +714,7 @@ QString MainWindow::getParameter(QString para) {
                 resizingNeeded = false;
                 x += ui->comboBox_Res->currentText().remove('x');
             }
-            return " -m " + ui->comboBox_Ver->currentText() + x;
+            return " -m " + ui->comboBox_Model->currentText() + x;
         }
         default:
             if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
@@ -729,7 +722,7 @@ QString MainWindow::getParameter(QString para) {
                 resizingNeeded = true;
                 scale = 4;
             }
-            return " -m " + ui->comboBox_Ver->currentText();
+            return " -m " + ui->comboBox_Model->currentText();
         }
     } else if (para == "gpuid") {
         if (ui->comboBox_GpuID->currentText() != "")
@@ -740,7 +733,7 @@ QString MainWindow::getParameter(QString para) {
             return " -j " + ui->lineEdit_Thread->text();
         else return "";
     } else {
-        if (ui->comboBox_Model->currentIndex() == 1)
+        if (ui->comboBox_Engine->currentIndex() == 1)
             return " -n " + QString::number(ui->comboBox_Denoise->currentIndex() - 1) + " -c " + QString::number(ui->comboBox_SyncGap->currentIndex());
         else return "";
     }
@@ -782,7 +775,7 @@ void MainWindow::Interpolating(QFileInfo file, int numFrame) {
     srcDir.mkdir(file.baseName() + "_interpolated");
 
     QString targetNumFrame;     // Only rife-v4 support target num frame
-    if ((ui->comboBox_Model->currentIndex() == 0 && ui->comboBox_Ver->currentIndex() < 9) || (ui->comboBox_Model->currentIndex() == 1 && ui->comboBox_Ver->currentIndex() > 2)) targetNumFrame = "";
+    if ((ui->comboBox_Engine->currentIndex() == 0 && ui->comboBox_Model->currentIndex() < 9) || (ui->comboBox_Engine->currentIndex() == 1 && ui->comboBox_Model->currentIndex() > 2)) targetNumFrame = "";
     else targetNumFrame = " -n " + QString::number(numFrame, 10);
 
     QString UHD;
@@ -791,7 +784,7 @@ void MainWindow::Interpolating(QFileInfo file, int numFrame) {
 
     ui->progressBar->setValue(0);
     QProcess *process = new QProcess;
-    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Model->currentText().toLower() + "/" + ui->comboBox_Model->currentText().toLower() + ".exe\" -i \"" + file.absolutePath() + '/' + file.baseName() + "_frames" + "\" -o \"" + frameDir.absolutePath() + "\"" + targetNumFrame + " -m " + ui->comboBox_Ver->currentText() + getParameter("gpuid") + getParameter("thread") + UHD;
+    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + file.absolutePath() + '/' + file.baseName() + "_frames" + "\" -o \"" + frameDir.absolutePath() + "\"" + targetNumFrame + " -m " + ui->comboBox_Model->currentText() + getParameter("gpuid") + getParameter("thread") + UHD;
     process->start(cmd);
     while (process->state() != 0) {
         setProgressBarVal((QDir(frameDir.absolutePath()).count() - 2) * 100 / numFrame);
@@ -989,7 +982,7 @@ void MainWindow::Upscaling(QFileInfo input) {
 
     ui->progressBar->setValue(0);
     QProcess *process = new QProcess;
-    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Model->currentText().toLower() + "/" + ui->comboBox_Model->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + ver + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
+    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + ver + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
     process->start(cmd);
     while (process->state() != 0) {
         setTimeTaken();
@@ -1012,9 +1005,7 @@ void MainWindow::Upscaling(QFileInfo input) {
             process->kill();
             state = "Stopped";
             QMessageBox msg(QMessageBox::Critical, "Conversion failed!", "Detected alpha channel!", QMessageBox::Close);
-            msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                              "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                              "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+            msg.setStyleSheet("QPushButton{height: 25px}");
             msg.exec();
         }
 
@@ -1245,9 +1236,7 @@ void MainWindow::on_pushButton_Start_released() {
     if (UpscalingTime) notification += "Upscaling Time: " + secToString(UpscalingTime) + '\n';
     if (EncodingTime) notification += "Encoding Time: " + secToString(EncodingTime) + '\n';
     QMessageBox msg(QMessageBox::Information, "Notification", notification, QMessageBox::Close);
-    msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                      "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                      "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+    msg.setStyleSheet("QPushButton{height: 25px}");
     msg.exec();
     setVisible_ViewState(0);
     ui->pushButton_Start->setVisible(1);
@@ -1260,9 +1249,7 @@ void MainWindow::on_pushButton_Start_released() {
 
 void MainWindow::closeEvent(QCloseEvent *event) {
     QMessageBox msg(QMessageBox::Question, "Confirmation", "Do you want to close?\n", QMessageBox::Yes | QMessageBox::No);
-    msg.setStyleSheet("QPushButton{background-color: rgb(66, 66, 66); border-radius: 7px; width: 50px; height: 25px}"
-                      "QPushButton:hover{background-color: rgb(80, 80, 80)}"
-                      "QPushButton:pressed{background-color: rgb(60, 60, 60)}");
+    msg.setStyleSheet("QPushButton{height: 25px}");
     if(msg.exec() == QMessageBox::Yes) {
         QProcess *close = new QProcess;
         close->start("taskkill /im \"EnhancingToolV2.exe\" /f /t");
@@ -1270,9 +1257,9 @@ void MainWindow::closeEvent(QCloseEvent *event) {
     } else event->ignore();
 }
 
-void MainWindow::on_comboBox_Ver_currentIndexChanged(int index) {
+void MainWindow::on_comboBox_Model_currentIndexChanged(int index) {
     if (ui->comboBox_Tool->currentIndex() == 1 && type == "video") {
-        if ((ui->comboBox_Model->currentIndex() == 0 && index < 9) || (ui->comboBox_Model->currentIndex() == 1 && index > 2)) {
+        if ((ui->comboBox_Engine->currentIndex() == 0 && index < 9) || (ui->comboBox_Engine->currentIndex() == 1 && index > 2)) {
             ui->comboBox_Fps->setCurrentIndex(1);
             ui->lineEdit_Fps->setEnabled(0);
             ui->comboBox_Fps->setEnabled(0);
