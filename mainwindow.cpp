@@ -30,7 +30,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->lineEdit_Output->setEnabled(0);
     ui->pushButton_Output->setEnabled(0);
     ui->comboBox_GpuID->setEnabled(0);
-    ui->lineEdit_TileSize->setReadOnly(1);
     ui->lineEdit_TileSize->setText("256");
     ui->spinBox_CRF->setRange(0, 51);
     ui->spinBox_CRF->setValue(23);
@@ -419,9 +418,7 @@ void MainWindow::on_comboBox_Model_currentIndexChanged(int index)
         switch (index)
         {
         case 0:
-            ui->comboBox_Ver->addItems(QStringList{"esrgan", "Photo-Conservative", "realesr-animevideov3", "RealESRGANv2-animevideo",
-                                                            "realesrgan-x4plus", "realesrgan-x4plus-anime", "realesr-general-x4v3",
-                                                            "realesr-general-wdn-x4v3", "realesrnet-x4plus"});
+            ui->comboBox_Ver->addItems(QStringList{"esrgan", "Photo-Conservative", "realesr-animevideov3", "RealESRGANv2-animevideo", "realesrgan-x4plus", "realesrgan-x4plus-anime", "realesr-general-x4v3", "realesr-general-wdn-x4v3", "realesrnet-x4plus", "BIGOLDIES", "LD-Anime_Skr_v1.0"});
             break;
         case 1:
             ui->comboBox_Ver->addItems(QStringList{"models-pro", "models-se"});
@@ -438,13 +435,11 @@ void MainWindow::on_comboBox_Model_currentIndexChanged(int index)
         switch (index)
         {
         case 0:
-            ui->comboBox_Ver->addItems(QStringList{"rife", "rife-anime", "rife-HD", "rife-UHD", "rife-v2", "rife-v2.3", "rife-v2.4",
-                                                   "rife-v3.0", "rife-v3.1", "rife-v4", "rife-v4.1", "rife-v4.6"});
+            ui->comboBox_Ver->addItems(QStringList{"rife", "rife-anime", "rife-HD", "rife-UHD", "rife-v2", "rife-v2.3", "rife-v2.4", "rife-v3.0", "rife-v3.1", "rife-v4", "rife-v4.1", "rife-v4.6"});
             ui->comboBox_Ver->setCurrentIndex(11);
             break;
         case 1:
-            ui->comboBox_Ver->addItems(QStringList{"IFRNet_GoPro", "IFRNet_L_GoPro", "IFRNet_S_GoPro",
-                                                   "IFRNet_Vimeo90K", "IFRNet_L_Vimeo90K", "IFRNet_S_Vimeo90K"});
+            ui->comboBox_Ver->addItems(QStringList{"IFRNet_GoPro", "IFRNet_L_GoPro", "IFRNet_S_GoPro", "IFRNet_Vimeo90K", "IFRNet_L_Vimeo90K", "IFRNet_S_Vimeo90K"});
             ui->comboBox_Ver->setCurrentIndex(3);
             break;
         }
@@ -740,7 +735,7 @@ QString MainWindow::getParameter(QString para)
         case 0:
             switch (ui->comboBox_Ver->currentIndex())
             {
-            case 0: case 1:
+            case 0 ... 1:
                 if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
                 else resizingNeeded = true;
 
@@ -787,6 +782,12 @@ QString MainWindow::getParameter(QString para)
                 return " -n " + ui->comboBox_Ver->currentText() + "-xs" + x;
                 break;
             }
+            case 9 ... 10:
+                if (ui->comboBox_Res->currentText() == "x2") resizingNeeded = false;
+                else resizingNeeded = true;
+
+                return " -n " + ui->comboBox_Ver->currentText() + "-x2 -s 2";
+                break;
             default:
                 if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
                 else resizingNeeded = true;
@@ -964,8 +965,8 @@ void MainWindow::Encoding(QFileInfo file, QString fps)
     {
         scale = " -vf scale=";
         if (ui->comboBox_Res->currentIndex() == 0) scale += ui->lineEdit_Res->text() + ':' + ui->lineEdit_Res_2->text();
-        else if (ui->comboBox_Res->currentText() == "x2") scale += "iw*0.5:ih*0.5";
-        else scale += "iw*0.75:ih*0.75";
+        else if (ui->comboBox_Res->currentText() == "x2") scale += "iw*0.5:ih*0.5:flags=lanczos";
+        else scale += "iw*0.75:ih*0.75:flags=lanczos";
     }
 
     ui->progressBar->setValue(0);
@@ -1145,6 +1146,10 @@ void MainWindow::Resizing(QFileInfo file)
 
     QString scale, output;
     if (ui->comboBox_Res->currentIndex() == 0) scale = ui->lineEdit_Res->text() + ':' + ui->lineEdit_Res_2->text();
+    else if (ui->comboBox_Ver->currentIndex() == 9 || ui->comboBox_Ver->currentIndex() == 10) {
+        if (ui->comboBox_Res->currentText() == "x3") scale = "iw*1.5:ih*1.5";
+        else scale = "iw*2:ih*2";
+    }
     else if (ui->comboBox_Res->currentText() == "x2") scale = "iw*0.5:ih*0.5";
     else scale = "iw*0.75:ih*0.75";
 

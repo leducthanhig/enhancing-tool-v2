@@ -809,6 +809,16 @@
        <string>realesrnet-x4plus</string>
       </property>
      </item>
+     <item>
+      <property name="text">
+       <string>BIGOLDIES</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>LD-Anime_Skr_v1.0</string>
+      </property>
+     </item>
     </widget>
     <widget class="QLabel" name="label_Ver">
      <property name="geometry">
@@ -1276,6 +1286,7 @@
   <tabstop>comboBox_Ver</tabstop>
   <tabstop>pushButton_GpuID</tabstop>
   <tabstop>comboBox_GpuID</tabstop>
+  <tabstop>lineEdit_TileSize</tabstop>
   <tabstop>pushButton_TileSize_Inc</tabstop>
   <tabstop>pushButton_TileSize_Dec</tabstop>
   <tabstop>lineEdit_Fps</tabstop>
@@ -1289,7 +1300,6 @@
   <tabstop>pushButton_Stop</tabstop>
   <tabstop>pushButton_Output</tabstop>
   <tabstop>lineEdit_Output</tabstop>
-  <tabstop>lineEdit_TileSize</tabstop>
  </tabstops>
  <resources/>
  <connections/>
