@@ -657,6 +657,11 @@
      </item>
      <item>
       <property name="text">
+       <string>x1</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
        <string>x2</string>
       </property>
      </item>
@@ -668,6 +673,11 @@
      <item>
       <property name="text">
        <string>x4</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>x8</string>
       </property>
      </item>
     </widget>
@@ -766,22 +776,12 @@
      </property>
      <item>
       <property name="text">
-       <string>esrgan</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Photo-Conservative</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
        <string>realesr-animevideov3</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>RealESRGANv2-animevideo</string>
+       <string>realesrganv2-animevideo</string>
       </property>
      </item>
      <item>
@@ -807,16 +807,6 @@
      <item>
       <property name="text">
        <string>realesrnet-x4plus</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>BIGOLDIES</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>LD-Anime_Skr_v1.0</string>
       </property>
      </item>
     </widget>

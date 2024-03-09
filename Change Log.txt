@@ -1,2 +1,8 @@
 31/08/2023
 - Add LD-Anime_Skr_v1.0 and BIGOLDIES model
+
+26/10/2023
+- Add the feature for automatically adding models
+- Add x1 and x8 options in the resolution combo box
+- Add the feature to show the time taken by some processes
+- Fix the taskkill issue when closing the application

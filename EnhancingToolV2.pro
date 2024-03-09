@@ -18,7 +18,7 @@ HEADERS += \
 FORMS += \
     mainwindow.ui
 
-RC_FILE = "EnhancingToolV2_resource.rc"
+RC_ICONS = "EnhancingToolV2.ico"
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

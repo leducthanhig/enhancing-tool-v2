@@ -12,8 +12,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -26,7 +25,7 @@ public:
     QTime       startTime;
     float       dur;
     bool        resizingNeeded;
-    int         TileSize, numFrame, numPart;
+    int         TileSize, numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime;
 
     int     Spliting();
     int     Decoding(QFileInfo file, int numFrame);
@@ -55,6 +54,7 @@ public:
     void    Upscaling(QFileInfo input);
     void    Resizing(QFileInfo file);
     void    dealWithUpscalingErr();
+    void    readModelName();
     float   getDuration(QFileInfo file);
     QString getParameter(QString para);
     QString getNewFps();
