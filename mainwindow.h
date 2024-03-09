@@ -25,7 +25,7 @@ public:
     QTime       startTime;
     float       dur;
     bool        resizingNeeded;
-    int         TileSize, numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime;
+    int         TileSize, numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime, scale;
 
     int     Spliting();
     int     Decoding(QFileInfo file, int numFrame);

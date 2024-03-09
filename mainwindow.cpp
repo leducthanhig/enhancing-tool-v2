@@ -642,9 +642,11 @@ QString MainWindow::getParameter(QString para) {
                 } else if (ui->comboBox_Res->currentText() == "x1") {
                     resizingNeeded = true;
                     x += "2";
+                    scale = 2;
                 } else if (ui->comboBox_Res->currentText() == "x8") {
                     resizingNeeded = true;
                     x += "4";
+                    scale = 4;
                 } else {
                     resizingNeeded = false;
                     x += ui->comboBox_Res->currentText().remove('x');
@@ -661,12 +663,15 @@ QString MainWindow::getParameter(QString para) {
                 } else if (ui->comboBox_Res->currentText() == "x3") {
                     resizingNeeded = true;
                     x += "x4";
+                    scale = 4;
                 } else if (ui->comboBox_Res->currentText() == "x1") {
                     resizingNeeded = true;
                     x += "x2 -s 2";
+                    scale = 2;
                 } else if (ui->comboBox_Res->currentText() == "x8") {
                     resizingNeeded = true;
                     x += "x4";
+                    scale = 4;
                 } else {
                     resizingNeeded = false;
                     x += ui->comboBox_Res->currentText() + " -s " + ui->comboBox_Res->currentText().remove('x');
@@ -675,8 +680,10 @@ QString MainWindow::getParameter(QString para) {
             }
             case 2 ... 6:
                 if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
-                else resizingNeeded = true;
-
+                else {
+                    resizingNeeded = true;
+                    scale = 4;
+                }
                 return " -n " + ui->comboBox_Ver->currentText();
             default:
                 QString x, modelName;
@@ -688,8 +695,10 @@ QString MainWindow::getParameter(QString para) {
                 }
                 x += modelName[0];
                 if (ui->comboBox_Res->currentText().remove("x") == x) resizingNeeded = false;
-                else resizingNeeded = true;
-
+                else {
+                    resizingNeeded = true;
+                    scale = x.QString::toInt();
+                }
                 return " -n " + modelName + " -s " + x;
             }
         case 1:
@@ -703,9 +712,11 @@ QString MainWindow::getParameter(QString para) {
             } else if (ui->comboBox_Res->currentText() == "x1") {
                 resizingNeeded = true;
                 x += "2";
+                scale = 2;
             } else if (ui->comboBox_Res->currentText() == "x8") {
                 resizingNeeded = true;
                 x += "4";
+                scale = 4;
             } else {
                 resizingNeeded = false;
                 x += ui->comboBox_Res->currentText().remove('x');
@@ -714,8 +725,10 @@ QString MainWindow::getParameter(QString para) {
         }
         default:
             if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
-            else resizingNeeded = true;
-
+            else {
+                resizingNeeded = true;
+                scale = 4;
+            }
             return " -m " + ui->comboBox_Ver->currentText();
         }
     } else if (para == "gpuid") {
@@ -835,17 +848,45 @@ void MainWindow::Encoding(QFileInfo file, QString fps) {
     if (numPart == 0) outputPath = ui->lineEdit_Output->text();
     else outputPath = frameDir.absolutePath() + '.' + fo.suffix();
 
-    QString scale;
+    QString scaleFilter;
     if (resizingNeeded && ui->comboBox_Tool->currentIndex() == 0) {
-        scale = " -vf scale=";
-        if (ui->comboBox_Res->currentIndex() == 0) scale += ui->lineEdit_Res->text();
-        else scale += QString::number(res[0].QString::toInt()*ui->comboBox_Res->currentText().remove("x").QString::toInt());
-        scale += ":-1:flags=lanczos";
+        scaleFilter = " -vf scale=";
+        if (ui->comboBox_Res->currentIndex() == 0) scaleFilter += ui->lineEdit_Res->text() + ":" + ui->lineEdit_Res_2->text();
+        else {
+            int t = ui->comboBox_Res->currentText().remove("x").QString::toInt();
+            switch (scale) {
+            case 1:
+                switch (t) {
+                case 2: scaleFilter += "iw*2:ih*2"; break;
+                case 3: scaleFilter += "iw*3:ih*3"; break;
+                case 4: scaleFilter += "iw*4:ih*4"; break;
+                case 8: scaleFilter += "iw*8:ih*8"; break;
+                }
+                break;
+            case 2:
+                switch (t) {
+                case 1: scaleFilter += "iw*0.5:ih*0.5"; break;
+                case 3: scaleFilter += "iw*1.5:ih*1.5"; break;
+                case 4: scaleFilter += "iw*2:ih*2"; break;
+                case 8: scaleFilter += "iw*4:ih*4"; break;
+                }
+                break;
+            case 4:
+                switch (t) {
+                case 1: scaleFilter += "iw*0.25:ih*0.25"; break;
+                case 2: scaleFilter += "iw*0.5:ih*0.5"; break;
+                case 3: scaleFilter += "iw*0.75:ih*0.75"; break;
+                case 8: scaleFilter += "iw*2:ih*2"; break;
+                }
+                break;
+            }
+        }
+        scaleFilter += ":flags=lanczos";
     }
 
     ui->progressBar->setValue(0);
     QProcess *process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg.exe\" -r " + fps + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + scale + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
+    QString cmd = "\"" + currentPath + "/ffmpeg.exe\" -r " + fps + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + scaleFilter + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
     process->start(cmd);
     while (process->state() != 0) {
         setProgressBarVal(int(getNumFrameFinished(process) * 100 / numFrame));
@@ -994,16 +1035,48 @@ void MainWindow::Upscaling(QFileInfo input) {
 void MainWindow::Resizing(QFileInfo file) {
     setTimeTaken();
 
-    QString scale, output;
-    if (ui->comboBox_Res->currentIndex() == 0) scale = ui->lineEdit_Res->text() + ":-1";
-    else scale = QString::number(res[0].QString::toInt()*ui->comboBox_Res->currentText().remove("x").QString::toInt()) + ":-1";
+    QString scaleFilter, output;
+    if (resizingNeeded && ui->comboBox_Tool->currentIndex() == 0) {
+        scaleFilter = " -vf scale=";
+        if (ui->comboBox_Res->currentIndex() == 0) scaleFilter += ui->lineEdit_Res->text() + ":" + ui->lineEdit_Res_2->text();
+        else {
+            int t = ui->comboBox_Res->currentText().remove("x").QString::toInt();
+            switch (scale) {
+            case 1:
+                switch (t) {
+                case 2: scaleFilter += "iw*2:ih*2"; break;
+                case 3: scaleFilter += "iw*3:ih*3"; break;
+                case 4: scaleFilter += "iw*4:ih*4"; break;
+                case 8: scaleFilter += "iw*8:ih*8"; break;
+                }
+                break;
+            case 2:
+                switch (t) {
+                case 1: scaleFilter += "iw*0.5:ih*0.5"; break;
+                case 3: scaleFilter += "iw*1.5:ih*1.5"; break;
+                case 4: scaleFilter += "iw*2:ih*2"; break;
+                case 8: scaleFilter += "iw*4:ih*4"; break;
+                }
+                break;
+            case 4:
+                switch (t) {
+                case 1: scaleFilter += "iw*0.25:ih*0.25"; break;
+                case 2: scaleFilter += "iw*0.5:ih*0.5"; break;
+                case 3: scaleFilter += "iw*0.75:ih*0.75"; break;
+                case 8: scaleFilter += "iw*2:ih*2"; break;
+                }
+                break;
+            }
+        }
+        scaleFilter += ":flags=lanczos";
+    }
 
     if (type == "dir") output = file.filePath().replace(file.absolutePath(), fo.filePath());
     else if (type == "image") output = fo.filePath();
     else output = file.filePath().replace("_upscaled", "_resized");
 
     QProcess *process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg.exe\" -i \"" + file.filePath() + "\" -vf scale=" + scale + ":flags=lanczos -y \"" + output + "\" -hide_banner";
+    QString cmd = "\"" + currentPath + "/ffmpeg.exe\" -i \"" + file.filePath() + "\" -vf scale=" + scaleFilter + ":flags=lanczos -y \"" + output + "\" -hide_banner";
     process->start(cmd);
 
     if (type == "image") {

@@ -6,3 +6,6 @@
 - Add x1 and x8 options in the resolution combo box
 - Add the feature to show the time taken by some processes
 - Fix the taskkill issue when closing the application
+
+31/10/2023
+- Fix the resizing issue for folders
