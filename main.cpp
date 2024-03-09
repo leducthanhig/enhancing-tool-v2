@@ -1,17 +1,23 @@
 #include "mainwindow.h"
-#include <QApplication>
 
 int main(int argc, char *argv[]) {
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
 
-    QFile f(":qdarkstyle/dark/darkstyle.qss");
-
-    f.open(QFile::ReadOnly | QFile::Text);
-    QTextStream ts(&f);
-    qApp->setStyleSheet(ts.readAll());
+    setTheme();
 
     MainWindow w;
     w.show();
 
-    return a.exec();
+    QSharedMemory sharedMemory;
+    sharedMemory.setKey("EnhancingToolV2");
+
+    if (sharedMemory.attach()) {
+        QMessageBox msg(QMessageBox::Critical, QObject::tr("Application Running"), QObject::tr("Another task of this application is already running."), QMessageBox::Close);
+        msg.setStyleSheet("QPushButton{height: 25px}");
+        msg.exec();
+        return 1;
+    }
+    sharedMemory.create(1);
+
+    return app.exec();
 }

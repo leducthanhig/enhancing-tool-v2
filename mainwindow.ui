@@ -188,6 +188,9 @@
        <bold>false</bold>
       </font>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Split the video to many segments to reduce the disk usages&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string/>
      </property>
@@ -290,6 +293,9 @@
        <pointsize>10</pointsize>
        <bold>false</bold>
       </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;The dimensions of the smaller sections into which an image is divided, use smaller value to reduce GPU memory usage, default selects automatically&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string/>
@@ -405,6 +411,9 @@
        <pointsize>10</pointsize>
        <bold>false</bold>
       </font>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Thread count for the three stages (image decoding + interpolation + image encoding), using larger values may increase GPU usage and consume more GPU memory. You can tune this configuration with &amp;quot;4:4:4&amp;quot; for many small-size images, and &amp;quot;2:2:2&amp;quot; for large-size images. The default setting usually works fine for most situations. If you find that your GPU is hungry, try increasing thread count to achieve faster processing&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string/>
@@ -549,6 +558,9 @@
        <bold>false</bold>
       </font>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;Constant Rate Factor (CRF) is a quality-controlled variable bitrate mode. It allows you to maintain a certain level of quality in your encoded videos by adjusting the file’s bitrate. The CRF value can be set from 0 to 51. Lower values result in better quality but larger file sizes, while higher values result in more compression but potentially noticeable quality degradation. For H.264, the default is 23, and for H.265, it’s 28&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
     </widget>
     <widget class="QLabel" name="label_VCodec">
      <property name="geometry">
@@ -586,14 +598,17 @@
        <bold>false</bold>
       </font>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;justify&quot;&gt;H.264 (AVC) is a common video format that is widely supported, making it a safer choice if compatibility is a concern&lt;/p&gt;&lt;p align=&quot;justify&quot;&gt;H.265 (HEVC) is a more efficient video format that can show the same quality video as H.264 but uses less data, so you might need more advanced hardware to use&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <item>
       <property name="text">
-       <string>H264</string>
+       <string>H.264</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>H265</string>
+       <string>H.265</string>
       </property>
      </item>
     </widget>
@@ -621,11 +636,6 @@
      <item>
       <property name="text">
        <string>RealCUGAN-NCNN-Vulkan</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>RealSR-NCNN-Vulkan</string>
       </property>
      </item>
     </widget>
@@ -688,11 +698,6 @@
      <item>
       <property name="text">
        <string>x4</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x8</string>
       </property>
      </item>
     </widget>
@@ -1268,6 +1273,100 @@
      </property>
     </widget>
    </widget>
+   <widget class="QLabel" name="label_Presets">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>120</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+      <bold>false</bold>
+     </font>
+    </property>
+    <property name="text">
+     <string>Presets:</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="comboBox_Presets">
+    <property name="geometry">
+     <rect>
+      <x>523</x>
+      <y>120</y>
+      <width>208</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Segoe UI</family>
+      <pointsize>10</pointsize>
+      <bold>false</bold>
+     </font>
+    </property>
+    <item>
+     <property name="text">
+      <string>HD animes</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>SD animes</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Animated arts</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Realistic or AI generated images</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Text pictures</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="pushButton_Info">
+    <property name="geometry">
+     <rect>
+      <x>740</x>
+      <y>120</y>
+      <width>31</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <family>Arial</family>
+      <pointsize>11</pointsize>
+      <italic>false</italic>
+      <bold>false</bold>
+      <strikeout>false</strikeout>
+      <kerning>true</kerning>
+     </font>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhancing Model Informations&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="layoutDirection">
+     <enum>Qt::LeftToRight</enum>
+    </property>
+    <property name="text">
+     <string>i</string>
+    </property>
+    <property name="autoExclusive">
+     <bool>false</bool>
+    </property>
+   </widget>
    <zorder>groupBox_IO</zorder>
    <zorder>pushButton_Stop</zorder>
    <zorder>pushButton_Start</zorder>
@@ -1276,6 +1375,9 @@
    <zorder>comboBox_Tool</zorder>
    <zorder>progressBar</zorder>
    <zorder>groupBox_Timer</zorder>
+   <zorder>label_Presets</zorder>
+   <zorder>comboBox_Presets</zorder>
+   <zorder>pushButton_Info</zorder>
   </widget>
  </widget>
  <tabstops>

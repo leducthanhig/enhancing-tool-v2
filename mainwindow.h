@@ -2,11 +2,21 @@
 #define MAINWINDOW_H
 
 #include "ui_mainwindow.h"
+#include <QApplication>
+#include <QSharedMemory>
 #include <QMainWindow>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QFileInfo>
 #include <QProcess>
+#include <QMimeData>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QProcess>
+#include <QMessageBox>
+#include <QEventLoop>
+#include <QTimer>
+#include <QMenu>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -25,7 +35,7 @@ public:
     QTime       startTime;
     float       dur;
     bool        resizingNeeded;
-    int         TileSize, numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime, scale;
+    int         numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime, scale;
 
     int     Spliting();
     int     Decoding(QFileInfo file, int numFrame);
@@ -71,6 +81,8 @@ private slots:
     void on_comboBox_Engine_currentIndexChanged(int index);
     void on_comboBox_Model_currentIndexChanged(int index);
     void on_comboBox_Fps_currentIndexChanged(int index);
+    void on_comboBox_Denoise_currentIndexChanged(int index);
+    void on_comboBox_Presets_currentIndexChanged(int index);
     void on_lineEdit_Output_textChanged(const QString text);
     void on_lineEdit_Res_editingFinished();
     void on_lineEdit_Res_2_editingFinished();
@@ -82,6 +94,7 @@ private slots:
     void on_pushButton_TileSize_Dec_released();
     void on_pushButton_GpuID_released();
     void on_pushButton_Start_released();
+    void on_pushButton_Info_released();
     void rightClickMenu_TimeTaken(QPoint pos);
     void rightClickMenu_Remaining(QPoint pos);
     inline void TimeTaken() {ui->label_TimeTaken->setVisible(1); ui->label_Remaining->setVisible(0);}
@@ -90,4 +103,15 @@ private slots:
 private:
     Ui::MainWindow *ui;
 };
+
+void setTheme();
+void delay(int time);
+bool ConfirmToStop();
+bool containsNonAnsi(QString s);
+float toSec(QStringList time);
+QString secToString(int sec);
+QString readStdOutput(QProcess* process);
+QStringList getGPUID(QString output);
+QStringList getResolutions(QString output);
+
 #endif // MAINWINDOW_H
