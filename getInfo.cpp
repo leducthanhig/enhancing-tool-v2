@@ -26,7 +26,7 @@ float MainWindow::getDuration(QFileInfo file) {
 }
 
 QString MainWindow::getParameter(QString para) {
-    if (para == "ver") {
+    if (para == "model") {
         if (ui->comboBox_Engine->currentIndex() == 0) {
             switch (ui->comboBox_Model->currentIndex()) {
             case 0:
@@ -49,31 +49,7 @@ QString MainWindow::getParameter(QString para) {
                 }
                 return " -n " + ui->comboBox_Model->currentText() + x;
             }
-            case 1:
-            {
-                QString x = "-";
-                if (ui->comboBox_Res->currentText() == "--") {
-                    resizingNeeded = true;
-                    if (res[0].toInt() * 2 > ui->lineEdit_Res->text().toInt()) x += "x2 -s 2";
-                    else x += "x4";
-                }
-                else if (ui->comboBox_Res->currentText() == "x3") {
-                    resizingNeeded = true;
-                    x += "x4";
-                    scale = 4;
-                }
-                else if (ui->comboBox_Res->currentText() == "x1") {
-                    resizingNeeded = true;
-                    x += "x2 -s 2";
-                    scale = 2;
-                }
-                else {
-                    resizingNeeded = false;
-                    x += ui->comboBox_Res->currentText() + " -s " + ui->comboBox_Res->currentText().remove('x');
-                }
-                return " -n " + ui->comboBox_Model->currentText() + x;
-            }
-            case 2: case 3: case 4: case 5: case 6:
+            case 1: case 2: case 3: case 4: case 5:
                 if (ui->comboBox_Res->currentText() == "x4") resizingNeeded = false;
                 else {
                     resizingNeeded = true;

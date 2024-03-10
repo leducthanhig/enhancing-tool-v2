@@ -72,7 +72,6 @@ void MainWindow::setVisible_ViewState(int para) {
 
 void MainWindow::setTimeTaken() {
     ui->label_TimeTaken->setText("Time taken: " + secToString(int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')))));
-
 }
 
 void MainWindow::setRemaining(QTime startTime) {
@@ -152,9 +151,9 @@ void MainWindow::setup() {
         ui->lineEdit_Output->setText(fi.filePath() + "_x_");
         ui->comboBox_Tool->setCurrentIndex(0);
         ui->comboBox_Tool->setEnabled(0);
+        setEnabled_Res(0);
         ui->label_Res->setEnabled(1);
         ui->comboBox_Res->setEnabled(1);
-        setEnabled_Res(0);
         setEnabled_OutFormat(0);
         setEnabled_Segment(0);
         setEnabled_TileSize(1);

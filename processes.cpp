@@ -114,7 +114,7 @@ retryUpscaling:;
     if (type == "video") inputPath = input.absolutePath() + '/' + input.completeBaseName() + "_frames";
     else inputPath = input.filePath();
 
-    QString ver = getParameter("ver");
+    QString model = getParameter("model");
     QString outputPath;
     if (type == "video") outputPath = input.absolutePath() + '/' + input.completeBaseName() + "_upscaled";
     else if (resizingNeeded) {
@@ -133,7 +133,7 @@ retryUpscaling:;
 
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
-    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + ver + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
+    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + model + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
     process->start(cmd);
     while (process->state() != 0) {
         setTimeTaken();

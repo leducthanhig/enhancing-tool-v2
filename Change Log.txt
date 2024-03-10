@@ -13,7 +13,7 @@
 12/11/2023
 - Update to a new dark theme
 
-09/03/2024
+10/03/2024
 - Remove GPU ID -1, Res x8, and RealSR
 - Fix the issue with getting file name extensions
 - Fix the x4 bug when using the 2x-NMKD-YandereNeo model
@@ -25,3 +25,4 @@
 - Add a table of model classification and evaluation results
 - Inform the user about the options that CUGAN does not support
 - Add some tool tips
+- Fix some issues of the combo boxs

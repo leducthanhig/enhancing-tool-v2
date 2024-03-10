@@ -801,11 +801,6 @@
      </item>
      <item>
       <property name="text">
-       <string>realesrganv2-animevideo</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
        <string>realesrgan-x4plus</string>
       </property>
      </item>
