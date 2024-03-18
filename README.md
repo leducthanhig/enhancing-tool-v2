@@ -10,7 +10,7 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 <img src="screenshots/GUI.png">
 </p>
 
-## ✨Key features
+## ✨Key Features
 - Full image style support (2D anime, or your daily photos & videos)
 - Provides recommended presets for specific purposes
 - Allows adjusting the tile size and the number of threads freely
@@ -20,7 +20,7 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 - Easy-to-use graphical user interface
 - Receives continual maintenance and updates
 
-## 📦Built-in models
+## 📦Built-in Models
 
 ### Upscaling
 >**realesr-animevideov3** - powered by [Xintao](https://github.com/xinntao)
@@ -66,6 +66,11 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 <p align="center">
 <img src="screenshots/Model_Info.png">
 </p>
+
+# ⬇️Download Latest Release
+Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.4/EnhancingToolV2.Setup.msi)
+
+📃[Full change log](https://github.com/leducthanhig/enhancing-tool-v2/blob/main/Change%20Log.txt)
 
 # 💝Credits
 - [Qt](https://www.qt.io)
