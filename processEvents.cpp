@@ -7,8 +7,24 @@ void MainWindow::dragEnterEvent(QDragEnterEvent* event) {
 }
 
 void MainWindow::dropEvent(QDropEvent* event) {
-    fi = QFileInfo(event->mimeData()->urls()[0].toLocalFile());
-    setup();
+    QFileInfo url(event->mimeData()->urls()[0].toLocalFile());
+
+    if (url.isDir()) type = "dir";
+    else {
+        QMimeDatabase db;
+        type = db.mimeTypeForFile(url).name();
+        type.erase(type.begin() + type.indexOf('/'), type.end());
+    }
+    
+    if (type == "image" || type == "video" || type == "dir") {
+        fi = url;
+        setup();
+    }
+    else {
+        QMessageBox msg(QMessageBox::Warning, "Warning!!!", "The input file format is unsupported", QMessageBox::Ok);
+        msg.setStyleSheet("QPushButton{height: 25px}");
+        msg.exec();
+    }
 }
 
 void MainWindow::closeEvent(QCloseEvent* event) {
@@ -17,6 +33,8 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     if (msg.exec() == QMessageBox::Yes) {
         QProcess* close = new QProcess;
         close->start("taskkill /im \"EnhancingToolV2.exe\" /f /t");
+        delete close;
+        
         event->accept();
     }
     else event->ignore();

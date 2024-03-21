@@ -71,66 +71,47 @@ void MainWindow::setVisible_ViewState(int para) {
 }
 
 void MainWindow::setTimeTaken() {
-    ui->label_TimeTaken->setText("Time taken: " + secToString(int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')))));
+    ui->label_TimeTaken->setText("Time taken: " + QTime(0, 0).addSecs(-QTime::currentTime().secsTo(startTime)).toString("hh:mm:ss"));
 }
 
 void MainWindow::setRemaining(QTime startTime) {
-    if (ui->progressBar->value() != 0) {
-        float remaining = (toSec(QTime::currentTime().toString("hh:mm:ss.zzz").split(':')) - toSec(startTime.toString("hh:mm:ss.zzz").split(':'))) * (float(100) / ui->progressBar->value() - 1);
-        if (ui->label_Remaining->text() == "Remaining: unknown" || remaining < toSec(ui->label_Remaining->text().remove("Remaining: ").split(':')))
-            ui->label_Remaining->setText("Remaining: " + secToString(qRound(remaining)));
+    if (type == "video" && numPart > 1) {
+        QString str = ui->progressBar->text();
+        double finished = str.sliced(str.indexOf("-") + 2, str.indexOf("of") - str.indexOf("-") - 2).toInt() - 1;
+        QString stage = str.sliced(str.indexOf(':') + 2, str.indexOf("...") - str.indexOf(":") - 2);
+        double weight;  // Estimate: Upscaling = 6 Encoding, Encoding = 5 Decoding => 30 + 5 + 1 = 36;
+        if (stage == "Decoding") weight = 1.0 / 36;
+        else if (stage == "Upscaling") weight = 31.0 / 36;
+        else if (stage == "Encoding") weight = 1;
+        finished += weight * ui->progressBar->value() / 100.0;
+        
+        if (finished > 0) {
+            QString remaining = QTime(0, 0).addSecs(qRound(-QTime::currentTime().secsTo(MainWindow::startTime) * (numPart / finished - 1))).toString("hh:mm:ss");
+            if (ui->label_Remaining->text() == "Remaining: unknown" || remaining < ui->label_Remaining->text().remove("Remaining: ")) {
+                ui->label_Remaining->setText("Remaining: " + remaining);
+            }
+        }
+        else {
+            ui->label_Remaining->setText("Remaining: unknown");
+        }
     }
-    else ui->label_Remaining->setText("Remaining: unknown");
+    else {
+        if (ui->progressBar->value() != 0) {
+            QString remaining = QTime(0, 0).addSecs(qRound(-QTime::currentTime().secsTo(startTime) * (100.0 / ui->progressBar->value() - 1))).toString("hh:mm:ss");
+            if (ui->label_Remaining->text() == "Remaining: unknown" || remaining < ui->label_Remaining->text().remove("Remaining: ")) {
+                ui->label_Remaining->setText("Remaining: " + remaining);
+            }
+        }
+        else {
+            ui->label_Remaining->setText("Remaining: unknown");
+        }
+    }
 }
 
 void MainWindow::setProgressBarVal(int newVal) {
     for (int i = ui->progressBar->value(); i <= newVal; i++) {
         ui->progressBar->setValue(i);
         delay(3);
-    }
-}
-
-void MainWindow::readMetadata() {
-    QProcess* process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + fi.filePath() + "\" -hide_banner";
-    process->start(cmd);
-    while (process->state() != 0) delay(100);
-    QString output = readStdOutput(process);
-
-    if (output.contains("Metadata")) type = "video";
-    else type = "image";
-
-    res = getResolutions(output);
-    ui->lineEdit_Res->setText(res[0]);
-    ui->lineEdit_Res_2->setText(res[1]);
-    if (ui->comboBox_Tool->currentIndex() == 0) setEnabled_Res(1);
-
-    if (type == "video") {
-        output = output.remove(0, output.indexOf("Duration"));
-        output = output.remove(output.indexOf("fps") - 1, output.length());
-
-        fps = "";
-        int i = output.length() - 1;
-        while (output[i] != ' ') {
-            fps = output[i] + fps;
-            i--;
-        }
-        ui->lineEdit_Fps->setText(fps);
-        if (ui->comboBox_Tool->currentIndex() == 1)
-            setEnabled_Fps(1);
-
-        output = output.remove("Duration: ");
-        output = output.remove(output.indexOf(','), output.length());
-        dur = toSec(output.split(':'));
-    }
-}
-
-void MainWindow::readModelName() {
-    QDir modelsDir = QDir(currentPath + "/realesrgan-ncnn-vulkan/models");
-    foreach(QString model, modelsDir.entryList()) {
-        if (model.contains(".bin") && model[1] == 'x') {
-            ui->comboBox_Model->addItem(model.remove(0, 3).remove(".bin"));
-        }
     }
 }
 
@@ -146,8 +127,7 @@ void MainWindow::setup() {
     ui->pushButton_Output->setEnabled(1);
     ui->pushButton_Start->setEnabled(1);
     
-    if (fi.isDir()) {
-        type = "dir";
+    if (type == "dir") {
         ui->lineEdit_Output->setText(fi.filePath() + "_x_");
         ui->comboBox_Tool->setCurrentIndex(0);
         ui->comboBox_Tool->setEnabled(0);
@@ -163,7 +143,7 @@ void MainWindow::setup() {
         setEnabled_Fps(0);
     }
     else {
-        readMetadata();
+        getMetadata();
         if (type == "image") {
             ui->lineEdit_Output->setText(fi.absolutePath() + "/" + fi.completeBaseName() + "_." + fi.suffix());
             ui->lineEdit_OutFormat->setText(fi.suffix());
@@ -216,7 +196,7 @@ void MainWindow::setup() {
     ui->comboBox_Presets->setCurrentIndex((ui->comboBox_Presets->currentIndex() + 4) % 5);
 
     if (containsNonAnsi(fi.absoluteFilePath())) {
-        QMessageBox msg(QMessageBox::Critical, "Warning!!!", "The input path contains Unicode characters that will raise an error when saving the result. Please rename and try again!\n", QMessageBox::Ok);
+        QMessageBox msg(QMessageBox::Warning, "Warning!!!", "The input path contains Unicode characters that will raise an error when saving the result. Please rename and try again!\n", QMessageBox::Ok);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         ui->pushButton_Start->setEnabled(0);

@@ -35,9 +35,10 @@ void MainWindow::on_pushButton_GpuID_released() {
     process->start(cmd);
     while (process->state() != 0) delay(100);
     QString output = readStdOutput(process);
+    delete process;
 
     if (output.contains("invalid gpu device")) {
-        QMessageBox msg(QMessageBox::Critical, "Warning!!!", "Please update your graphic driver!\n", QMessageBox::Ok);
+        QMessageBox msg(QMessageBox::Critical, "Error!!!", "Please update your graphic driver!\n", QMessageBox::Close);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
     }
@@ -47,9 +48,9 @@ void MainWindow::on_pushButton_GpuID_released() {
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         ui->comboBox_GpuID->clear();
-        for (int i = 0; i < list.length(); i++)
+        for (int i = 0; i < list.length(); i++) {
             ui->comboBox_GpuID->addItem(list[i][1]);
-
+        }
         ui->comboBox_GpuID->setToolTip(list.join("\n"));
     }
     ui->comboBox_GpuID->setEnabled(1);
@@ -78,8 +79,21 @@ void MainWindow::on_pushButton_TileSize_Dec_released() {
 void MainWindow::on_pushButton_Input_released() {
     QString url = QFileDialog::getOpenFileName(this, "Open File", QString(), "All Files (*.*) ;; Image Files (*.png *.jpg *.jpeg) ;; Video Files (*.mp4 *.mkv *.ts)");
     if (url != "") {
-        fi = QFileInfo(url);
-        setup();
+        QFileInfo file(url);
+        
+        QMimeDatabase db;
+        type = db.mimeTypeForFile(file).name();
+        type.erase(type.begin() + type.indexOf('/'), type.end());
+
+        if (type == "image" || type == "video") {
+            fi = file;
+            setup();
+        }
+        else {
+            QMessageBox msg(QMessageBox::Warning, "Warning!!!", "The input file format is unsupported", QMessageBox::Ok);
+            msg.setStyleSheet("QPushButton{height: 25px}");
+            msg.exec();
+        }
     }
 }
 
@@ -91,18 +105,19 @@ void MainWindow::on_pushButton_Output_released() {
 }
 
 void MainWindow::on_pushButton_Start_released() {
-    DecodingTime = InterpolatingTime = UpscalingTime = EncodingTime = 0;
+    DecodingTime = InterpolatingTime = UpscalingTime = EncodingTime = QTime(0, 0);
     startTime = QTime::currentTime();
     state = "Started";
 
     ui->pushButton_Start->setVisible(0);
-    setVisible_ViewState(1);
     ui->groupBox_IO->setEnabled(0);
     ui->label_Tool->setEnabled(0);
     ui->comboBox_Tool->setEnabled(0);
     ui->label_Presets->setEnabled(0);
     ui->comboBox_Presets->setEnabled(0);
+    ui->pushButton_Info->setEnabled(0);
     ui->groupBox_Setting->setEnabled(0);
+    setVisible_ViewState(1);
 
     switch (ui->comboBox_Tool->currentIndex()) {
     case 0:
@@ -163,12 +178,12 @@ void MainWindow::on_pushButton_Start_released() {
                 QFile(fi.absolutePath() + '/' + fi.completeBaseName() + "_upscaled." + fo.suffix()).remove();
             }
         }
-        else {
+        else { // type == "video"
             numPart = Spliting();
 
             if (numPart == 0) {
                 ui->progressBar->setFormat("%p% - Decoding...");
-                numFrame = Decoding(fi, int(dur * fps.QString::toFloat()));
+                numFrame = Decoding(fi, qRound(dur * fps));
                 if (state == "Stopped") goto end;
 
                 ui->progressBar->setFormat("%p% - Upscaling...");
@@ -180,13 +195,13 @@ void MainWindow::on_pushButton_Start_released() {
                 if (state == "Stopped") goto end;
             }
             else {
-                float dur;
+                double dur;
                 for (int i = 0; i < numPart; i++) {
                     QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i, 10) + '.' + fi.suffix());
                     dur = getDuration(file);
 
                     ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Decoding...");
-                    numFrame = Decoding(file, int(dur * fps.QString::toFloat()));
+                    numFrame = Decoding(file, qRound(dur * fps));
                     if (state == "Stopped") goto end;
 
                     ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Upscaling...");
@@ -207,7 +222,7 @@ void MainWindow::on_pushButton_Start_released() {
 
         if (numPart == 0) {
             ui->progressBar->setFormat("%p% - Decoding...");
-            numFrame = Decoding(fi, int(dur * fps.QString::toFloat()));
+            numFrame = Decoding(fi, qRound(dur * fps));
             if (state == "Stopped") goto end;
 
             ui->progressBar->setFormat("%p% - Interpolating...");
@@ -216,18 +231,18 @@ void MainWindow::on_pushButton_Start_released() {
             if (state == "Stopped") goto end;
 
             ui->progressBar->setFormat("%p% - Encoding...");
-            QString newFps = getNewFps();
+            double newFps = getNewFps();
             Encoding(fi, newFps);
             if (state == "Stopped") goto end;
         }
         else {
-            float dur;
+            double dur;
             for (int i = 0; i < numPart; i++) {
                 QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i, 10) + '.' + fi.suffix());
                 dur = getDuration(file);
 
                 ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Decoding...");
-                numFrame = Decoding(file, int(dur * fps.QString::toFloat()));
+                numFrame = Decoding(file, qRound(dur * fps));
                 if (state == "Stopped") goto end;
 
                 ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Interpolating...");
@@ -236,26 +251,30 @@ void MainWindow::on_pushButton_Start_released() {
                 if (state == "Stopped") goto end;
 
                 ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Encoding...");
-                QString newFps = getNewFps();
+                double newFps = getNewFps();
                 Encoding(file, newFps);
                 if (state == "Stopped") goto end;
             }
             ui->progressBar->setFormat("%p% - Joining splited parts...");
             Joining(QDir(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited"));
         }
-        break;
     }
-
     state = "Finished";
 end:;
     QString notification = state + "\n\n" + ui->label_TimeTaken->text() + "\n\n";
-    if (DecodingTime) notification += "Decoding Time: " + secToString(DecodingTime) + '\n';
-    if (InterpolatingTime) notification += "Interpolating Time: " + secToString(InterpolatingTime) + '\n';
-    if (UpscalingTime) notification += "Upscaling Time: " + secToString(UpscalingTime) + '\n';
-    if (EncodingTime) notification += "Encoding Time: " + secToString(EncodingTime) + '\n';
+    if (-DecodingTime.secsTo(QTime(0, 0)) > 0) 
+        notification += "Decoding Time: " + DecodingTime.toString("hh:mm:ss") + '\n';
+    if (-InterpolatingTime.secsTo(QTime(0, 0)) > 0) 
+        notification += "Interpolating Time: " + InterpolatingTime.toString("hh:mm:ss") + '\n';
+    if (-UpscalingTime.secsTo(QTime(0, 0)) > 0) 
+        notification += "Upscaling Time: " + UpscalingTime.toString("hh:mm:ss") + '\n';
+    if (-EncodingTime.secsTo(QTime(0, 0)) > 0) 
+        notification += "Encoding Time: " + EncodingTime.toString("hh:mm:ss") + '\n';
+    
     QMessageBox msg(QMessageBox::Information, "Notification", notification, QMessageBox::Close);
     msg.setStyleSheet("QPushButton{height: 25px}");
     msg.exec();
+    
     setVisible_ViewState(0);
     ui->pushButton_Start->setVisible(1);
     ui->progressBar->setValue(0);
@@ -264,5 +283,6 @@ end:;
     if (type == "video") ui->comboBox_Tool->setEnabled(1);
     ui->label_Presets->setEnabled(1);
     ui->comboBox_Presets->setEnabled(1);
+    ui->pushButton_Info->setEnabled(1);
     ui->groupBox_Setting->setEnabled(1);
 }

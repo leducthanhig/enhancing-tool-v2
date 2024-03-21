@@ -3,20 +3,23 @@
 
 #include "ui_mainwindow.h"
 #include <QApplication>
-#include <QSharedMemory>
-#include <QMainWindow>
 #include <QDragEnterEvent>
 #include <QDropEvent>
-#include <QFileInfo>
-#include <QProcess>
-#include <QMimeData>
-#include <QFileInfo>
-#include <QFileDialog>
-#include <QProcess>
-#include <QMessageBox>
 #include <QEventLoop>
-#include <QTimer>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QImage>
+#include <QMainWindow>
+#include <QMediaMetaData>
+#include <QMediaPlayer>
 #include <QMenu>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QMimeDatabase>
+#include <QMimeType>
+#include <QProcess>
+#include <QSharedMemory>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,20 +30,27 @@ class MainWindow : public QMainWindow {
 
 public:
     MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
-    QStringList res;
+    QList<int>  res{0, 0};
     QFileInfo   fi, fo;
+    QString     type, state;
     QString     currentPath = qApp->applicationDirPath();
-    QString     fps, type, state;
-    QTime       startTime;
-    float       dur;
+    QTime       startTime, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime;
+    double      fps;
     bool        resizingNeeded;
-    int         numFrame, numPart, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime, scale;
+    int         dur, numFrame, numPart, scale;
 
+    int     getTargetNumFrame(int numFrame);
     int     Spliting();
     int     Decoding(QFileInfo file, int numFrame);
-    int     getNumFrameFinished(QProcess *process);
-    int     getTargetNumFrame(int numFrame);
+    void    Interpolating(QFileInfo file, int numFrame);
+    void    Upscaling(QFileInfo input);
+    void    Resizing(QFileInfo file);
+    void    Encoding(QFileInfo file, double fps);
+    void    Joining(QDir dir);
+    void    dealWithInterpolatingErr();
+    void    dealWithUpscalingErr();
     void    setEnabled_Res(int para);
     void    setEnabled_OutFormat(int para);
     void    setEnabled_Segment(int para);
@@ -52,25 +62,16 @@ public:
     void    setEnabled_Denoise(int para);
     void    setEnabled_SyncGap(int para);
     void    setVisible_ViewState(int para);
-    void    readMetadata();
-    void    setup();
     void    setProgressBarVal(int newVal);
-    void    Interpolating(QFileInfo file, int numFrame);
-    void    Encoding(QFileInfo file, QString fps);
     void    setTimeTaken();
     void    setRemaining(QTime startTime);
-    void    dealWithInterpolatingErr();
-    void    Joining(QDir dir);
-    void    Upscaling(QFileInfo input);
-    void    Resizing(QFileInfo file);
-    void    dealWithUpscalingErr();
+    void    setup();
     void    readModelName();
-    float   getDuration(QFileInfo file);
-    QString getParameter(QString para);
-    QString getNewFps();
+    void    getMetadata();
+    double  getNewFps();
     QString getVCodec();
-
-    ~MainWindow();
+    QString getScaleFilter();
+    QString getParameter(QString para);
 
 private slots:
     void dragEnterEvent(QDragEnterEvent *event);
@@ -104,14 +105,13 @@ private:
     Ui::MainWindow *ui;
 };
 
-void setTheme();
-void delay(int time);
-bool ConfirmToStop();
-bool containsNonAnsi(QString s);
-float toSec(QStringList time);
-QString secToString(int sec);
+int     getNumFrameFinished(QProcess *process);
+void    setTheme();
+void    delay(int time);
+bool    ConfirmToStop();
+bool    containsNonAnsi(QString s);
+double  getDuration(QFileInfo file);
 QString readStdOutput(QProcess* process);
 QStringList getGPUID(QString output);
-QStringList getResolutions(QString output);
 
-#endif // MAINWINDOW_H
+#endif

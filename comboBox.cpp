@@ -57,7 +57,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
     ui->comboBox_Engine->clear();
     ui->comboBox_Presets->clear();
 
-    if (index == 0) {
+    if (index == 0) { // Upscaling
         ui->comboBox_Engine->addItems(QStringList{ "RealESRGAN-NCNN-Vulkan", "RealCUGAN-NCNN-Vulkan" });
         ui->comboBox_Presets->addItems(QStringList{ "HD animes", "SD animes", "Animated arts", "Realistic or AI generated images", "Text pictures" });
         ui->comboBox_Fps->setCurrentIndex(0);
@@ -89,7 +89,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
             setEnabled_CRF(0);
             setEnabled_Fps(0);
         }
-        else {
+        else { // type == "video"
             setEnabled_Res(1);
             setEnabled_Segment(1);
             setEnabled_TileSize(1);
@@ -98,11 +98,8 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
             setEnabled_CRF(1);
             setEnabled_Fps(0);
         }
-        // Reset the option
-        ui->comboBox_Presets->setCurrentIndex(1);
-        ui->comboBox_Presets->setCurrentIndex(0);
     }
-    else {
+    else { // Interpolating
         ui->comboBox_Engine->addItems(QStringList{ "RIFE-NCNN-Vulkan", "IFRNet-NCNN-Vulkan" });
         ui->comboBox_Presets->addItems(QStringList{ "Fast but low quality", "Slow but high quality" });
         ui->comboBox_Res->setCurrentIndex(0);
@@ -115,10 +112,10 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
         if (fi.filePath() != "") {
             setEnabled_Fps(1);
         }
-        // Reset the option
-        ui->comboBox_Presets->setCurrentIndex(1);
-        ui->comboBox_Presets->setCurrentIndex(0);
     }
+    // Reset the option
+    ui->comboBox_Presets->setCurrentIndex(1);
+    ui->comboBox_Presets->setCurrentIndex(0);
 }
 
 void MainWindow::on_comboBox_Engine_currentIndexChanged(int index) {
@@ -153,11 +150,11 @@ void MainWindow::on_comboBox_Res_currentIndexChanged(int index) {
     }
     else {
         if (type == "dir") ui->lineEdit_Output->setText(ui->lineEdit_Output->text().removeLast() + QString::number(index));
-        else ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(res[0].QString::toInt() * index) + 'x' + QString::number(res[1].QString::toInt() * index) + '.' + fo.suffix());
+        else ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(res[0] * index) + 'x' + QString::number(res[1] * index) + '.' + fo.suffix());
     }
 
     if ((index == 3 || index == 4) && (ui->comboBox_Denoise->currentIndex() == 2 || ui->comboBox_Denoise->currentIndex() == 3) && ui->comboBox_Engine->currentIndex() == 1) {
-        QMessageBox msg(QMessageBox::Critical, "Warning!!!", "This denoise level is not supported!\n", QMessageBox::Close);
+        QMessageBox msg(QMessageBox::Warning, "Warning!!!", "This denoise level is not supported!\n", QMessageBox::Ok);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         ui->comboBox_Denoise->setCurrentIndex(0);
@@ -166,10 +163,10 @@ void MainWindow::on_comboBox_Res_currentIndexChanged(int index) {
 
 void MainWindow::on_comboBox_Fps_currentIndexChanged(int index) {
     if (index == 0) {
-        if (ui->lineEdit_Fps->text().toFloat() > fps.toFloat()) ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Fps->text() + "FPS." + fo.suffix());
+        if (ui->lineEdit_Fps->text().toDouble() > fps) ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Fps->text() + "FPS." + fo.suffix());
     }
     else {
-        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(fps.QString::toFloat() * (index + 1), 'f', 2) + "FPS." + fo.suffix());
+        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(fps * (index + 1), 'g', 2) + "FPS." + fo.suffix());
     }
 }
 
@@ -189,7 +186,7 @@ void MainWindow::on_comboBox_Model_currentIndexChanged(int index) {
 
 void MainWindow::on_comboBox_Denoise_currentIndexChanged(int index) {
     if ((index == 2 || index == 3) && (ui->comboBox_Res->currentIndex() == 3 || ui->comboBox_Res->currentIndex() == 4) && ui->comboBox_Engine->currentIndex() == 1) {
-        QMessageBox msg(QMessageBox::Critical, "Warning!!!", "This denoise level is not supported!\n", QMessageBox::Close);
+        QMessageBox msg(QMessageBox::Warning, "Warning!!!", "This denoise level is not supported!\n", QMessageBox::Ok);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         ui->comboBox_Denoise->setCurrentIndex(0);

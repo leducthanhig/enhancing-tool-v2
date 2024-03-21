@@ -4,10 +4,9 @@ int MainWindow::Spliting() {
     setTimeTaken();
 
     if (ui->lineEdit_Segment->text() != "" && ui->lineEdit_Segment->text().QString::toInt() < dur) {
-        QDir srcDir(fi.absolutePath());
         QDir splitedDir(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited");
         if (splitedDir.exists()) splitedDir.removeRecursively();
-        srcDir.mkdir(fi.completeBaseName() + "_splited");
+        QDir(fi.absolutePath()).mkdir(fi.completeBaseName() + "_splited");
 
         QProcess* process = new QProcess;
         QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + fi.filePath() + "\" -c copy -map 0 -f segment -segment_time " + ui->lineEdit_Segment->text() + " -reset_timestamps 1 \"" + splitedDir.absolutePath() + "/%d." + fi.suffix() + "\" -hide_banner";
@@ -16,6 +15,8 @@ int MainWindow::Spliting() {
             setTimeTaken();
             delay(100);
         }
+        delete process;
+        
         return splitedDir.count() - 2;
     }
     else return 0;
@@ -25,10 +26,9 @@ int MainWindow::Decoding(QFileInfo file, int numFrame) {
     setTimeTaken();
     QTime startTime = QTime::currentTime();
 
-    QDir srcDir(file.absolutePath());
     QDir frameDir(file.absolutePath() + '/' + file.completeBaseName() + "_frames");
     if (frameDir.exists()) frameDir.removeRecursively();
-    srcDir.mkdir(file.completeBaseName() + "_frames");
+    QDir(file.absolutePath()).mkdir(file.completeBaseName() + "_frames");
 
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
@@ -38,7 +38,6 @@ int MainWindow::Decoding(QFileInfo file, int numFrame) {
         setProgressBarVal(int(getNumFrameFinished(process) * 100 / numFrame));
         setTimeTaken();
         setRemaining(startTime);
-
         delay(100);
 
         if (ui->pushButton_Stop->isDown()) {
@@ -48,7 +47,9 @@ int MainWindow::Decoding(QFileInfo file, int numFrame) {
             }
         }
     }
-    DecodingTime += int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')));
+    delete process;
+    
+    DecodingTime = DecodingTime.addSecs(-QTime::currentTime().secsTo(startTime));
 
     if (state != "Stopped") setProgressBarVal(100);
 
@@ -60,18 +61,16 @@ retryInterpolating:;
     setTimeTaken();
     QTime startTime = QTime::currentTime();
 
-    QDir srcDir(file.absolutePath());
     QDir frameDir(file.absolutePath() + '/' + file.completeBaseName() + "_interpolated");
     if (frameDir.exists()) frameDir.removeRecursively();
-    srcDir.mkdir(file.completeBaseName() + "_interpolated");
+    QDir(file.absolutePath()).mkdir(file.completeBaseName() + "_interpolated");
 
     QString targetNumFrame;     // Only rife-v4 support target num frame
     if ((ui->comboBox_Engine->currentIndex() == 0 && ui->comboBox_Model->currentIndex() < 9) || (ui->comboBox_Engine->currentIndex() == 1 && ui->comboBox_Model->currentIndex() > 2)) targetNumFrame = "";
-    else targetNumFrame = " -n " + QString::number(numFrame, 10);
+    else targetNumFrame = " -n " + QString::number(numFrame);
 
-    QString UHD;
-    if (res[1] >= "2160") UHD = " -u";
-    else UHD = "";
+    QString UHD = "";
+    if (res[1] >= 2160) UHD = " -u";
 
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
@@ -81,7 +80,6 @@ retryInterpolating:;
         setProgressBarVal((QDir(frameDir.absolutePath()).count() - 2) * 100 / numFrame);
         setTimeTaken();
         setRemaining(startTime);
-
         delay(100);
 
         if (ui->pushButton_Stop->isDown()) {
@@ -97,7 +95,9 @@ retryInterpolating:;
             if (state != "Stopped") goto retryInterpolating;
         }
     }
-    InterpolatingTime += int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')));
+    delete process;
+    
+    InterpolatingTime = InterpolatingTime.addSecs(-QTime::currentTime().secsTo(startTime));
 
     if (state != "Stopped") {
         setProgressBarVal(100);
@@ -114,7 +114,6 @@ retryUpscaling:;
     if (type == "video") inputPath = input.absolutePath() + '/' + input.completeBaseName() + "_frames";
     else inputPath = input.filePath();
 
-    QString model = getParameter("model");
     QString outputPath;
     if (type == "video") outputPath = input.absolutePath() + '/' + input.completeBaseName() + "_upscaled";
     else if (resizingNeeded) {
@@ -128,17 +127,16 @@ retryUpscaling:;
 
         QDir dir(outputPath);
         if (dir.exists()) dir.removeRecursively();
-        QDir(QFileInfo(outputPath).absolutePath()).mkdir(outputPath);
+        QDir(dir.absolutePath()).mkdir(outputPath);
     }
 
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
-    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + model + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
+    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + getParameter("model") + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
     process->start(cmd);
     while (process->state() != 0) {
         setTimeTaken();
         setRemaining(startTime);
-
         delay(100);
 
         if (ui->pushButton_Stop->isDown()) {
@@ -150,7 +148,7 @@ retryUpscaling:;
 
         QString output = readStdOutput(process);
         if (type != "image") setProgressBarVal((QDir(outputPath).count() - 2) * 100 / numFrame);
-        else if (output.contains("%\r\n")) setProgressBarVal(qRound(output.remove("%\r\n").toFloat()));
+        else if (output.contains("%\r\n")) setProgressBarVal(qRound(output.remove("%\r\n").toDouble()));
 
         if (output.contains("alpha") && fo.suffix() == "jpg") {
             process->kill();
@@ -166,7 +164,9 @@ retryUpscaling:;
             if (state != "Stopped") goto retryUpscaling;
         }
     }
-    UpscalingTime += int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')));
+    delete process;
+
+    UpscalingTime = UpscalingTime.addSecs(-QTime::currentTime().secsTo(startTime));
 
     if (state != "Stopped") {
         setProgressBarVal(100);
@@ -174,7 +174,7 @@ retryUpscaling:;
     }
 }
 
-void MainWindow::Encoding(QFileInfo file, QString fps) {
+void MainWindow::Encoding(QFileInfo file, double fps) {
     setTimeTaken();
     QTime startTime = QTime::currentTime();
 
@@ -186,49 +186,15 @@ void MainWindow::Encoding(QFileInfo file, QString fps) {
     QString outputPath;
     if (numPart == 0) outputPath = ui->lineEdit_Output->text();
     else outputPath = frameDir.absolutePath() + '.' + fo.suffix();
-
-    QString scaleFilter;
-    if (resizingNeeded && ui->comboBox_Tool->currentIndex() == 0) {
-        scaleFilter = " -vf scale=";
-        if (ui->comboBox_Res->currentIndex() == 0) scaleFilter += ui->lineEdit_Res->text() + ":" + ui->lineEdit_Res_2->text();
-        else {
-            int t = ui->comboBox_Res->currentText().remove("x").QString::toInt();
-            switch (scale) {
-            case 1:
-                switch (t) {
-                case 2: scaleFilter += "iw*2:ih*2"; break;
-                case 3: scaleFilter += "iw*3:ih*3"; break;
-                case 4: scaleFilter += "iw*4:ih*4"; break;
-                }
-                break;
-            case 2:
-                switch (t) {
-                case 1: scaleFilter += "iw*0.5:ih*0.5"; break;
-                case 3: scaleFilter += "iw*1.5:ih*1.5"; break;
-                case 4: scaleFilter += "iw*2:ih*2"; break;
-                }
-                break;
-            case 4:
-                switch (t) {
-                case 1: scaleFilter += "iw*0.25:ih*0.25"; break;
-                case 2: scaleFilter += "iw*0.5:ih*0.5"; break;
-                case 3: scaleFilter += "iw*0.75:ih*0.75"; break;
-                }
-                break;
-            }
-        }
-        scaleFilter += ":flags=lanczos";
-    }
-
+    
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + fps + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + scaleFilter + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
+    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + QString::number(fps, 'g', 2) + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + getScaleFilter() + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
     process->start(cmd);
     while (process->state() != 0) {
         setProgressBarVal(int(getNumFrameFinished(process) * 100 / numFrame));
         setTimeTaken();
         setRemaining(startTime);
-
         delay(100);
 
         if (ui->pushButton_Stop->isDown()) {
@@ -238,7 +204,9 @@ void MainWindow::Encoding(QFileInfo file, QString fps) {
             }
         }
     }
-    EncodingTime += int(toSec(QTime::currentTime().toString("hh:mm:ss").split(':')) - toSec(startTime.toString("hh:mm:ss").split(':')));
+    delete process;
+
+    EncodingTime = EncodingTime.addSecs(-QTime::currentTime().secsTo(startTime));
 
     if (state != "Stopped") {
         setProgressBarVal(100);
@@ -257,10 +225,9 @@ void MainWindow::Joining(QDir dir) {
 
         QTextStream stream(&list);
         for (int i = 0; i < numPart; i++) {
-            stream << "file '" + dir.absolutePath() + "/" + QString::number(i, 10) + suffix + "." + fo.suffix() + "'\n";
+            stream << "file '" + dir.absolutePath() + "/" + QString::number(i) + suffix + "." + fo.suffix() + "'\n";
         }
     }
-
     ui->progressBar->setValue(0);
     QProcess* process = new QProcess;
     QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -f concat -safe 0 -i \"" + dir.absolutePath() + "/list.txt\" -c copy -y \"" + ui->lineEdit_Output->text() + "\" -hide_banner";
@@ -269,6 +236,8 @@ void MainWindow::Joining(QDir dir) {
         setTimeTaken();
         delay(100);
     }
+    delete process;
+
     setProgressBarVal(100);
 
     list.close();
@@ -278,45 +247,13 @@ void MainWindow::Joining(QDir dir) {
 void MainWindow::Resizing(QFileInfo file) {
     setTimeTaken();
 
-    QString scaleFilter, output;
-    if (resizingNeeded && ui->comboBox_Tool->currentIndex() == 0) {
-        scaleFilter = " -vf scale=";
-        if (ui->comboBox_Res->currentIndex() == 0) scaleFilter += ui->lineEdit_Res->text() + ":" + ui->lineEdit_Res_2->text();
-        else {
-            int t = ui->comboBox_Res->currentText().remove("x").QString::toInt();
-            switch (scale) {
-            case 1:
-                switch (t) {
-                case 2: scaleFilter += "iw*2:ih*2"; break;
-                case 3: scaleFilter += "iw*3:ih*3"; break;
-                case 4: scaleFilter += "iw*4:ih*4"; break;
-                }
-                break;
-            case 2:
-                switch (t) {
-                case 1: scaleFilter += "iw*0.5:ih*0.5"; break;
-                case 3: scaleFilter += "iw*1.5:ih*1.5"; break;
-                case 4: scaleFilter += "iw*2:ih*2"; break;
-                }
-                break;
-            case 4:
-                switch (t) {
-                case 1: scaleFilter += "iw*0.25:ih*0.25"; break;
-                case 2: scaleFilter += "iw*0.5:ih*0.5"; break;
-                case 3: scaleFilter += "iw*0.75:ih*0.75"; break;
-                }
-                break;
-            }
-        }
-        scaleFilter += ":flags=lanczos";
-    }
-
+    QString output;
     if (type == "dir") output = file.filePath().replace(file.absolutePath(), fo.filePath());
     else if (type == "image") output = fo.filePath();
     else output = file.filePath().replace("_upscaled", "_resized");
 
     QProcess* process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + file.filePath() + "\" -vf scale=" + scaleFilter + ":flags=lanczos -y \"" + output + "\" -hide_banner";
+    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + file.filePath() + "\" -vf scale=" + getScaleFilter() + ":flags=lanczos -y \"" + output + "\" -hide_banner";
     process->start(cmd);
 
     if (type == "image") {
@@ -324,5 +261,6 @@ void MainWindow::Resizing(QFileInfo file) {
             setTimeTaken();
             delay(100);
         }
+        delete process;
     }
 }

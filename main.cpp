@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
     sharedMemory.setKey("EnhancingToolV2");
 
     if (sharedMemory.attach()) {
-        QMessageBox msg(QMessageBox::Critical, QObject::tr("Application Running"), QObject::tr("Another task of this application is already running."), QMessageBox::Close);
+        QMessageBox msg(QMessageBox::Critical, "Error!!!", "Another task of this application is already running!", QMessageBox::Close);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
         return 1;
