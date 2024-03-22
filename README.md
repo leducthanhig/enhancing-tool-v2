@@ -68,9 +68,9 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 </p>
 
 # ⬇️Download Latest Release
-Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.4/EnhancingToolV2.Setup.msi)
+Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs with Vulkan support [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.4/EnhancingToolV2.Setup.msi)
 
-📃[Full change log](https://github.com/leducthanhig/enhancing-tool-v2/blob/main/Change%20Log.txt)
+📃[See full change log](https://github.com/leducthanhig/enhancing-tool-v2/blob/main/Change%20Log.txt)
 
 # 💝Credits
 - [Qt](https://www.qt.io)
