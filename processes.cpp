@@ -8,7 +8,7 @@ int MainWindow::Spliting() {
         if (splitedDir.exists()) splitedDir.removeRecursively();
         QDir(fi.absolutePath()).mkdir(fi.completeBaseName() + "_splited");
 
-        QProcess* process = new QProcess;
+        process = new QProcess;
         QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + fi.filePath() + "\" -c copy -map 0 -f segment -segment_time " + ui->lineEdit_Segment->text() + " -reset_timestamps 1 \"" + splitedDir.absolutePath() + "/%d." + fi.suffix() + "\" -hide_banner";
         process->start(cmd);
         while (process->state() != 0) {
@@ -31,7 +31,7 @@ int MainWindow::Decoding(QFileInfo file, int numFrame) {
     QDir(file.absolutePath()).mkdir(file.completeBaseName() + "_frames");
 
     ui->progressBar->setValue(0);
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + file.filePath() + "\" \"" + frameDir.absolutePath() + "/%8d.png\" -hide_banner";
     process->start(cmd);
     while (process->state() != 0) {
@@ -73,7 +73,7 @@ retryInterpolating:;
     if (res[1] >= 2160) UHD = " -u";
 
     ui->progressBar->setValue(0);
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + file.absolutePath() + '/' + file.completeBaseName() + "_frames" + "\" -o \"" + frameDir.absolutePath() + "\"" + targetNumFrame + " -m " + ui->comboBox_Model->currentText() + getParameter("gpuid") + getParameter("thread") + UHD;
     process->start(cmd);
     while (process->state() != 0) {
@@ -131,7 +131,7 @@ retryUpscaling:;
     }
 
     ui->progressBar->setValue(0);
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + getParameter("model") + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
     process->start(cmd);
     while (process->state() != 0) {
@@ -188,7 +188,7 @@ void MainWindow::Encoding(QFileInfo file, double fps) {
     else outputPath = frameDir.absolutePath() + '.' + fo.suffix();
     
     ui->progressBar->setValue(0);
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + QString::number(fps, 'g', 2) + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + getScaleFilter() + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
     process->start(cmd);
     while (process->state() != 0) {
@@ -229,7 +229,7 @@ void MainWindow::Joining(QDir dir) {
         }
     }
     ui->progressBar->setValue(0);
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -f concat -safe 0 -i \"" + dir.absolutePath() + "/list.txt\" -c copy -y \"" + ui->lineEdit_Output->text() + "\" -hide_banner";
     process->start(cmd);
     while (process->state() != 0) {
@@ -252,7 +252,7 @@ void MainWindow::Resizing(QFileInfo file) {
     else if (type == "image") output = fo.filePath();
     else output = file.filePath().replace("_upscaled", "_resized");
 
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -i \"" + file.filePath() + "\" -vf scale=" + getScaleFilter() + ":flags=lanczos -y \"" + output + "\" -hide_banner";
     process->start(cmd);
 

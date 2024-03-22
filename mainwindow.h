@@ -34,6 +34,7 @@ public:
 
     QList<int>  res{0, 0};
     QFileInfo   fi, fo;
+    QProcess*   process;
     QString     type, state;
     QString     currentPath = qApp->applicationDirPath();
     QTime       startTime, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime;
@@ -105,7 +106,7 @@ private:
     Ui::MainWindow *ui;
 };
 
-int     getNumFrameFinished(QProcess *process);
+int     getNumFrameFinished(QProcess* process);
 void    setTheme();
 void    delay(int time);
 bool    ConfirmToStop();

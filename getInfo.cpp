@@ -195,7 +195,7 @@ void MainWindow::getMetadata() {
 
 void MainWindow::readModelName() {
     QDir modelsDir = QDir(currentPath + "/realesrgan-ncnn-vulkan/models");
-    foreach(QString model, modelsDir.entryList()) {
+    foreach(QString model, modelsDir.entryList(QDir::Files)) {
         if (model.contains(".bin") && model[1] == 'x') {
             ui->comboBox_Model->addItem(model.remove(0, 3).remove(".bin"));
         }

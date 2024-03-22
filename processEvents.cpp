@@ -31,10 +31,10 @@ void MainWindow::closeEvent(QCloseEvent* event) {
     QMessageBox msg(QMessageBox::Question, "Confirmation", "Do you want to close?\n", QMessageBox::Yes | QMessageBox::No);
     msg.setStyleSheet("QPushButton{height: 25px}");
     if (msg.exec() == QMessageBox::Yes) {
-        QProcess* close = new QProcess;
-        close->start("taskkill /im \"EnhancingToolV2.exe\" /f /t");
-        delete close;
-        
+        if (process != NULL) {
+            process->kill();
+            delete process;
+        }
         event->accept();
     }
     else event->ignore();

@@ -30,7 +30,7 @@ void MainWindow::on_pushButton_Info_released() {
 void MainWindow::on_pushButton_GpuID_released() {
     ui->pushButton_GpuID->setEnabled(0);
 
-    QProcess* process = new QProcess;
+    process = new QProcess;
     QString cmd = "\"" + currentPath + "/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe\" -i check.jpg -o checked.jpg";
     process->start(cmd);
     while (process->state() != 0) delay(100);
@@ -135,14 +135,14 @@ void MainWindow::on_pushButton_Start_released() {
                 QDir(fo.absolutePath()).mkdir(fo.filePath());
 
                 QDir inDir(fi.filePath() + "_upscaled");
-                QStringList list = inDir.entryList();
+                QStringList list = inDir.entryList(QDir::Files);
 
                 QTime startTime = QTime::currentTime();
-                for (int i = 2; i < list.length(); i++) {
+                for (int i = 0; i < list.length(); i++) {
                     Resizing(QFileInfo(inDir.path() + "/" + list[i]));
 
                     delay(300);
-                    setProgressBarVal((i - 1) * 100 / numFrame);
+                    setProgressBarVal((i + 1) * 100 / numFrame);
                     setRemaining(startTime);
 
                     if (ui->pushButton_Stop->isDown()) {
