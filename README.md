@@ -105,7 +105,7 @@ See [original](src/Realistic%20Photo%20-%20Original.jpg) and [upscaled](src/Real
 </p>
 
 # ⬇️ Download Latest Release
-Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs with Vulkan support [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.4/EnhancingToolV2.Setup.msi)
+Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs with Vulkan support [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.5/EnhancingToolV2.Setup.msi)
 
 📃 [See full change log](Change%20Log.txt)
 
