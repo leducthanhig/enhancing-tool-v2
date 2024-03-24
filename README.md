@@ -1,16 +1,16 @@
 <p align="center">
-<img src="EnhancingToolV2.ico">
+  <img src="EnhancingToolV2.ico">
+  <h2 align="center"> EnhancingToolV2: Video Frame Interpolation and Super Resolution </h2>
+  </a>
 </p>
 
-<h2 align="center"> EnhancingToolV2: Video Frame Interpolation and Super Resolution </h2>
-
-# ℹ️About EnhancingToolV2
+# ℹ️ About EnhancingToolV2
 EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI and NCNN inference by Tencent which is lightweight and runs on NVIDIA, AMD for video frame interpolation and image/video upscaling. It's designed with the Qt framework to provide a seamless user experience, offering intuitive controls for professional-quality enhancements.
 <p align="center">
-<img src="screenshots/GUI.png">
+<img src="src/GUI.png">
 </p>
 
-## ✨Key Features
+## ✨ Key Features
 - Full image style support (2D anime, or your daily photos & videos)
 - Provides recommended presets for specific purposes
 - Allows adjusting the tile size and the number of threads freely
@@ -20,7 +20,7 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 - Easy-to-use graphical user interface
 - Receives continual maintenance and updates
 
-## 📦Built-in Models
+## 📦 Built-in Models
 
 ### Upscaling
 >**realesr-animevideov3** - powered by [Xintao](https://github.com/xinntao)
@@ -62,17 +62,54 @@ EnhancingToolV2 is a state-of-the-art GUI application that utilizes advanced AI 
 
 >**IFRNet-ncnn-Vulkan** - powered by [nihui](https://github.com/nihui)
 
-## ⚖️Upscaling Model Comparison
+## 🆚 Upscaling Model Comparison
 <p align="center">
-<img src="screenshots/Model_Info.png">
+<img src="src/Model_Info.png">
 </p>
 
-# ⬇️Download Latest Release
+## ✅ Samples
+### AI Generated Image (1) upscaled by 4x-DF2K_JPEG
+See [original](src/AI%20Generated%20Image%20(1)%20-%20Original.jpg) and [upscaled](src/AI%20Generated%20Image%20(1)%20-%204x-DF2K_JPEG.png) images
+<p align="center">
+<img src="src/AI Generated Image (1).png">
+</p>
+
+### AI Generated Image (2) upscaled by 4x-DF2K_JPEG
+See [original](src/AI%20Generated%20Image%20(2)%20-%20Original.jpg) and [upscaled](src/AI%20Generated%20Image%20(2)%20-%204x-DF2K_JPEG.png) images
+<p align="center">
+<img src="src/AI Generated Image (2).png">
+</p>
+
+### Animated Art upscaled by 4x-NMKD-UltraYandere
+See [original](src/Animated%20Art%20-%20Original.jpg) and [upscaled](src/Animated%20Art%20-%204x-NMKD-UltraYandere.png) images
+<p align="center">
+<img src="src/Animated Art.png">
+</p>
+
+### LR Animated Frame upscaled by 2x-AniScale2S-Compact
+See [original](src/LR%20Animated%20Frame%20-%20Original.jpg) and [upscaled](src/LR%20Animated%20Frame%20-%202x-AniScale2S-Compact.png) images
+<p align="center">
+<img src="src/LR Animated Frame.png">
+</p>
+
+### Noise Animated Frame upscaled by 2x-AniScale2S-Compact
+See [original](src/Noise%20Animated%20Frame%20-%20Original.jpg) and [upscaled](src/Noise%20Animated%20Frame%20-%202x-AniScale2S-Compact.png) images
+<p align="center">
+<img src="src/Noise Animated Frame.png">
+</p>
+
+### Realistic Photo upscaled by 4x-DF2K_JPEG
+See [original](src/Realistic%20Photo%20-%20Original.jpg) and [upscaled](src/Realistic%20Photo%20-%204x-DF2K_JPEG.png) images
+<p align="center">
+<img src="src/Realistic Photo.png">
+</p>
+
+# ⬇️ Download Latest Release
 Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs with Vulkan support [here](https://github.com/leducthanhig/enhancing-tool-v2/releases/download/v2.4/EnhancingToolV2.Setup.msi)
 
-📃[See full change log](https://github.com/leducthanhig/enhancing-tool-v2/blob/main/Change%20Log.txt)
+📃 [See full change log](Change%20Log.txt)
 
-# 💝Credits
+# 💝 Credits
 - [Qt](https://www.qt.io)
 - [FFmpeg](https://ffmpeg.org)
 - [Real-ESRGAN-ncnn-Vulkan](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan)
