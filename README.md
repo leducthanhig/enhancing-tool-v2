@@ -117,3 +117,4 @@ Download the latest release for Windows x64 PCs with Intel/AMD/Nvidia GPUs with 
 - [RIFE-ncnn-Vulkan](https://github.com/nihui/rife-ncnn-vulkan)
 - [IFRNet-ncnn-Vulkan](https://github.com/nihui/ifrnet-ncnn-vulkan)
 - [OpenModelDB](https://openmodeldb.info)
+- [QDarkStyleSheet](https://github.com/ColinDuquesnoy/QDarkStyleSheet)
