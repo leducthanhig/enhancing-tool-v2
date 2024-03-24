@@ -116,6 +116,8 @@ void MainWindow::setProgressBarVal(int newVal) {
 }
 
 void MainWindow::setup() {
+    customOutputFileName = 0;
+
     ui->lineEdit_Res->clear();
     ui->lineEdit_Res_2->clear();
     ui->lineEdit_OutFormat->clear();
@@ -128,7 +130,7 @@ void MainWindow::setup() {
     ui->pushButton_Start->setEnabled(1);
     
     if (type == "dir") {
-        ui->lineEdit_Output->setText(fi.filePath() + "_x_");
+        ui->lineEdit_Output->setText(fi.filePath());
         ui->comboBox_Tool->setCurrentIndex(0);
         ui->comboBox_Tool->setEnabled(0);
         setEnabled_Res(0);
@@ -145,7 +147,7 @@ void MainWindow::setup() {
     else {
         getMetadata();
         if (type == "image") {
-            ui->lineEdit_Output->setText(fi.absolutePath() + "/" + fi.completeBaseName() + "_." + fi.suffix());
+            ui->lineEdit_Output->setText(fi.absoluteFilePath());
             ui->lineEdit_OutFormat->setText(fi.suffix());
             ui->comboBox_Tool->setCurrentIndex(0);
             ui->comboBox_Tool->setEnabled(0);
@@ -161,7 +163,7 @@ void MainWindow::setup() {
             setEnabled_Fps(0);
         }
         else { // type == "video"
-            ui->lineEdit_Output->setText(fi.absolutePath() + "/" + fi.completeBaseName() + "_." + fi.suffix());
+            ui->lineEdit_Output->setText(fi.absoluteFilePath());
             ui->lineEdit_OutFormat->setText(fi.suffix());
             ui->comboBox_Tool->setEnabled(1);
             ui->lineEdit_Segment->setText("30");

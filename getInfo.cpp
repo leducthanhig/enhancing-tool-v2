@@ -12,7 +12,7 @@ double getDuration(QFileInfo file) {
     player->setSource(QUrl(file.absoluteFilePath()));
     QMediaMetaData metaData(player->metaData());
     delete player;
-    
+
     return qvariant_cast<double>(QVariant(metaData.value(QMediaMetaData::Duration))) / 1000.0;
 }
 
@@ -170,22 +170,22 @@ double MainWindow::getNewFps() {
 
 void MainWindow::getMetadata() {
     QSize size;
-    
-    if (type == "image") {
-        size = QImage(fi.absoluteFilePath()).size();
-    }
-    else if (type == "video") {
-        QMediaPlayer *player = new QMediaPlayer;
+
+    if (type == "video" || fi.suffix() == "gif") {
+        QMediaPlayer* player = new QMediaPlayer;
         player->setSource(QUrl(fi.absoluteFilePath()));
         QMediaMetaData metaData(player->metaData());
         delete player;
 
         size = qvariant_cast<QSize>(QVariant(metaData.value(QMediaMetaData::Resolution)));
-        
+
         dur = getDuration(fi);
-        
+
         fps = qvariant_cast<double>(QVariant(metaData.value(QMediaMetaData::VideoFrameRate)));
-        ui->lineEdit_Fps->setText(QString::number(fps, 'g', 2));
+        ui->lineEdit_Fps->setText(QString::number(fps, 'f', 2));
+    }
+    else if (type == "image") {
+        size = QImage(fi.absoluteFilePath()).size();
     }
     res[0] = size.width();
     res[1] = size.height();

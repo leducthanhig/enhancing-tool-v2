@@ -33,12 +33,12 @@ void MainWindow::on_pushButton_GpuID_released() {
     process = new QProcess;
     QString cmd = "\"" + currentPath + "/realesrgan-ncnn-vulkan/realesrgan-ncnn-vulkan.exe\" -i check.jpg -o checked.jpg";
     process->start(cmd);
-    while (process->state() != 0) delay(100);
+    process->waitForFinished();
     QString output = readStdOutput(process);
     delete process;
 
     if (output.contains("invalid gpu device")) {
-        QMessageBox msg(QMessageBox::Critical, "Error!!!", "Please update your graphic driver!\n", QMessageBox::Close);
+        QMessageBox msg(QMessageBox::Critical, "Error!!!", "Your GPU does not support Vulkan or the graphic driver is out-of-date!\n", QMessageBox::Close);
         msg.setStyleSheet("QPushButton{height: 25px}");
         msg.exec();
     }
@@ -63,7 +63,7 @@ void MainWindow::on_pushButton_TileSize_Inc_released() {
     if (TileSize == 0) TileSize = 32;
     else if (TileSize == 8192) ui->pushButton_TileSize_Inc->setEnabled(0);
     ui->pushButton_TileSize_Dec->setEnabled(1);
-    ui->lineEdit_TileSize->setText(QString::number(TileSize, 10));
+    ui->lineEdit_TileSize->setText(QString::number(TileSize));
 }
 
 void MainWindow::on_pushButton_TileSize_Dec_released() {
@@ -73,7 +73,7 @@ void MainWindow::on_pushButton_TileSize_Dec_released() {
         ui->pushButton_TileSize_Dec->setEnabled(0);
     }
     ui->pushButton_TileSize_Inc->setEnabled(1);
-    ui->lineEdit_TileSize->setText(QString::number(TileSize, 10));
+    ui->lineEdit_TileSize->setText(QString::number(TileSize));
 }
 
 void MainWindow::on_pushButton_Input_released() {
@@ -123,7 +123,8 @@ void MainWindow::on_pushButton_Start_released() {
     case 0:
         if (type == "dir") {
             ui->progressBar->setFormat("%p% - Upscaling...");
-            Upscaling(fi);
+            numFrame = QDir(fi.absoluteFilePath()).count() - 2;
+            Upscaling(fi, numFrame);
             if (state == "Stopped") goto end;
 
             if (resizingNeeded) {
@@ -162,7 +163,7 @@ void MainWindow::on_pushButton_Start_released() {
                 inDir.removeRecursively();
             }
         }
-        else if (type == "image") {
+        else if (type == "image" && fi.suffix() != "gif") {
             ui->progressBar->setFormat("%p% - Upscaling...");
             Upscaling(fi);
             if (state == "Stopped") goto end;
@@ -178,16 +179,17 @@ void MainWindow::on_pushButton_Start_released() {
                 QFile(fi.absolutePath() + '/' + fi.completeBaseName() + "_upscaled." + fo.suffix()).remove();
             }
         }
-        else { // type == "video"
+        else { // type == "video" && fi.suffix() == "gif"
             numPart = Spliting();
 
             if (numPart == 0) {
                 ui->progressBar->setFormat("%p% - Decoding...");
                 numFrame = Decoding(fi, qRound(dur * fps));
+                if (numFrame == 0) state = "Stopped";
                 if (state == "Stopped") goto end;
 
                 ui->progressBar->setFormat("%p% - Upscaling...");
-                Upscaling(fi);
+                Upscaling(fi, numFrame);
                 if (state == "Stopped") goto end;
 
                 ui->progressBar->setFormat("%p% - Encoding...");
@@ -197,7 +199,7 @@ void MainWindow::on_pushButton_Start_released() {
             else {
                 double dur;
                 for (int i = 0; i < numPart; i++) {
-                    QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i, 10) + '.' + fi.suffix());
+                    QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i) + '.' + fi.suffix());
                     dur = getDuration(file);
 
                     ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Decoding...");
@@ -205,7 +207,7 @@ void MainWindow::on_pushButton_Start_released() {
                     if (state == "Stopped") goto end;
 
                     ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Upscaling...");
-                    Upscaling(file);
+                    Upscaling(file, numFrame);
                     if (state == "Stopped") goto end;
 
                     ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Encoding...");
@@ -238,7 +240,7 @@ void MainWindow::on_pushButton_Start_released() {
         else {
             double dur;
             for (int i = 0; i < numPart; i++) {
-                QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i, 10) + '.' + fi.suffix());
+                QFileInfo file = QFileInfo(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited/" + QString::number(i) + '.' + fi.suffix());
                 dur = getDuration(file);
 
                 ui->progressBar->setFormat("%p% - " + QString::number(i + 1) + " of " + QString::number(numPart) + ": Decoding...");

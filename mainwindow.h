@@ -38,15 +38,15 @@ public:
     QString     type, state;
     QString     currentPath = qApp->applicationDirPath();
     QTime       startTime, DecodingTime, InterpolatingTime, UpscalingTime, EncodingTime;
-    double      fps;
-    bool        resizingNeeded;
-    int         dur, numFrame, numPart, scale;
+    double      dur, fps;
+    bool        resizingNeeded, customOutputFileName;
+    int         numFrame, numPart, scale;
 
     int     getTargetNumFrame(int numFrame);
     int     Spliting();
     int     Decoding(QFileInfo file, int numFrame);
     void    Interpolating(QFileInfo file, int numFrame);
-    void    Upscaling(QFileInfo input);
+    void    Upscaling(QFileInfo input, int numFrame = 1);
     void    Resizing(QFileInfo file);
     void    Encoding(QFileInfo file, double fps);
     void    Joining(QDir dir);
@@ -85,11 +85,12 @@ private slots:
     void on_comboBox_Fps_currentIndexChanged(int index);
     void on_comboBox_Denoise_currentIndexChanged(int index);
     void on_comboBox_Presets_currentIndexChanged(int index);
-    void on_lineEdit_Output_textChanged(const QString text);
-    void on_lineEdit_Res_editingFinished();
-    void on_lineEdit_Res_2_editingFinished();
-    void on_lineEdit_OutFormat_textChanged(const QString suffix);
-    void on_lineEdit_Fps_editingFinished();
+    void on_lineEdit_Output_textChanged(QString text);
+    void on_lineEdit_Output_textEdited();
+    void on_lineEdit_Res_textEdited(QString text);
+    void on_lineEdit_Res_2_textEdited(QString text);
+    void on_lineEdit_OutFormat_textEdited(QString suffix);
+    void on_lineEdit_Fps_textEdited(QString text);
     void on_pushButton_Input_released();
     void on_pushButton_Output_released();
     void on_pushButton_TileSize_Inc_released();

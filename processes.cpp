@@ -3,7 +3,7 @@
 int MainWindow::Spliting() {
     setTimeTaken();
 
-    if (ui->lineEdit_Segment->text() != "" && ui->lineEdit_Segment->text().QString::toInt() < dur) {
+    if (ui->lineEdit_Segment->text() != "" && ui->lineEdit_Segment->text().QString::toDouble() < dur) {
         QDir splitedDir(fi.absolutePath() + '/' + fi.completeBaseName() + "_splited");
         if (splitedDir.exists()) splitedDir.removeRecursively();
         QDir(fi.absolutePath()).mkdir(fi.completeBaseName() + "_splited");
@@ -105,26 +105,24 @@ retryInterpolating:;
     }
 }
 
-void MainWindow::Upscaling(QFileInfo input) {
+void MainWindow::Upscaling(QFileInfo input, int numFrame) {
 retryUpscaling:;
     setTimeTaken();
     QTime startTime = QTime::currentTime();
 
     QString inputPath;
-    if (type == "video") inputPath = input.absolutePath() + '/' + input.completeBaseName() + "_frames";
+    if (type == "video" || fi.suffix() == "gif") inputPath = input.absolutePath() + '/' + input.completeBaseName() + "_frames";
     else inputPath = input.filePath();
 
-    QString outputPath;
-    if (type == "video") outputPath = input.absolutePath() + '/' + input.completeBaseName() + "_upscaled";
+    QString outputPath, model = getParameter("model"); // Declare 'model' variable here to make 'resizingNeeded' variable assigned value
+    if (type == "video" || fi.suffix() == "gif") outputPath = input.absolutePath() + '/' + input.completeBaseName() + "_upscaled";
     else if (resizingNeeded) {
         if (type == "image") outputPath = input.absolutePath() + '/' + input.completeBaseName() + "_upscaled." + fo.suffix();
         else outputPath = input.filePath() + "_upscaled";
     }
     else outputPath = ui->lineEdit_Output->text();
 
-    if (type != "image") {
-        numFrame = QDir(inputPath).count() - 2;
-
+    if (type != "image" || fi.suffix() == "gif") {
         QDir dir(outputPath);
         if (dir.exists()) dir.removeRecursively();
         QDir(dir.absolutePath()).mkdir(outputPath);
@@ -132,7 +130,7 @@ retryUpscaling:;
 
     ui->progressBar->setValue(0);
     process = new QProcess;
-    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + getParameter("model") + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
+    QString cmd = "\"" + currentPath + "/" + ui->comboBox_Engine->currentText().toLower() + "/" + ui->comboBox_Engine->currentText().toLower() + ".exe\" -i \"" + inputPath + "\" -o \"" + outputPath + "\"" + model + " -t " + ui->lineEdit_TileSize->text() + getParameter("noise_syncgap") + getParameter("gpuid") + getParameter("thread");
     process->start(cmd);
     while (process->state() != 0) {
         setTimeTaken();
@@ -145,9 +143,8 @@ retryUpscaling:;
                 state = "Stopped";
             }
         }
-
         QString output = readStdOutput(process);
-        if (type != "image") setProgressBarVal((QDir(outputPath).count() - 2) * 100 / numFrame);
+        if (type != "image" || fi.suffix() == "gif") setProgressBarVal((QDir(outputPath).count() - 2) * 100 / numFrame);
         else if (output.contains("%\r\n")) setProgressBarVal(qRound(output.remove("%\r\n").toDouble()));
 
         if (output.contains("alpha") && fo.suffix() == "jpg") {
@@ -157,7 +154,6 @@ retryUpscaling:;
             msg.setStyleSheet("QPushButton{height: 25px}");
             msg.exec();
         }
-
         if (output.contains("failed")) {
             process->kill();
             dealWithUpscalingErr();
@@ -170,7 +166,7 @@ retryUpscaling:;
 
     if (state != "Stopped") {
         setProgressBarVal(100);
-        if (type == "video") QDir(inputPath).removeRecursively();
+        if (type == "video" || fi.suffix() == "gif") QDir(inputPath).removeRecursively();
     }
 }
 
@@ -189,7 +185,13 @@ void MainWindow::Encoding(QFileInfo file, double fps) {
     
     ui->progressBar->setValue(0);
     process = new QProcess;
-    QString cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + QString::number(fps, 'g', 2) + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a -c:a copy -crf " + QString::number(ui->spinBox_CRF->value(), 10) + getVCodec() + getScaleFilter() + " -pix_fmt yuv420p -y \"" + outputPath + "\" -hide_banner";
+    QString cmd;
+    if (type == "video") {
+        cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + QString::number(fps, 'f', 2) + " -i \"" + frameDir.absolutePath() + "/%8d.png\" -i \"" + file.filePath() + "\" -map 0:v -map 1:a:? -map 1:s:? -map 1:t:? -c:a copy -c:s copy -c:t copy -disposition:s default -crf " + QString::number(ui->spinBox_CRF->value()) + getVCodec() + getScaleFilter() + " -y \"" + outputPath + "\" -hide_banner";
+    }
+    else { // fi.suffix == "gif"
+        cmd = "\"" + currentPath + "/ffmpeg/ffmpeg.exe\" -r " + QString::number(fps, 'f', 2) + " -i \"" + frameDir.absolutePath() + "/%8d.png\"" + getScaleFilter() + " -y \"" + outputPath + "\" -hide_banner";
+    }
     process->start(cmd);
     while (process->state() != 0) {
         setProgressBarVal(int(getNumFrameFinished(process) * 100 / numFrame));

@@ -116,6 +116,14 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
     // Reset the option
     ui->comboBox_Presets->setCurrentIndex(1);
     ui->comboBox_Presets->setCurrentIndex(0);
+    // Update the model name in output file name
+    QString fileName = fo.completeBaseName();
+    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    if (idx != -1) {
+        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName += ui->comboBox_Model->currentText();
+        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
+    }
 }
 
 void MainWindow::on_comboBox_Engine_currentIndexChanged(int index) {
@@ -141,18 +149,34 @@ void MainWindow::on_comboBox_Engine_currentIndexChanged(int index) {
             ui->comboBox_Model->addItems(QStringList{ "IFRNet_GoPro", "IFRNet_L_GoPro", "IFRNet_S_GoPro", "IFRNet_Vimeo90K", "IFRNet_L_Vimeo90K", "IFRNet_S_Vimeo90K" });
         }
     }
+    // Update the model name in output file name
+    QString fileName = fo.completeBaseName();
+    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    if (idx != -1) {
+        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName += ui->comboBox_Model->currentText();
+        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
+    }
 }
 
 void MainWindow::on_comboBox_Res_currentIndexChanged(int index) {
     if (index == 0) {
-        if (type == "dir") ui->comboBox_Res->setCurrentIndex(1);
-        else ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Res->text() + 'x' + ui->lineEdit_Res_2->text() + '.' + fo.suffix());
+        if (type == "dir") {
+            ui->comboBox_Res->setCurrentText("x2"); // type == "dir" cannot be applied specific resolution
+        }
+        else if (!customOutputFileName) {
+            if (ui->lineEdit_Res->text().toInt() > 0 && ui->lineEdit_Res_2->text().toInt() > 0) {
+                ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Res->text() + "x" + ui->lineEdit_Res_2->text() + "_" + ui->comboBox_Model->currentText() + "." + fo.suffix());
+            }
+            else {
+                ui->comboBox_Res->setCurrentText("x2");
+            }
+        }
     }
-    else {
-        if (type == "dir") ui->lineEdit_Output->setText(ui->lineEdit_Output->text().removeLast() + QString::number(index));
-        else ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(res[0] * index) + 'x' + QString::number(res[1] * index) + '.' + fo.suffix());
+    else if (!customOutputFileName) {
+        if (type == "dir") ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_x" + QString::number(index));
+        else ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(res[0] * index) + "x" + QString::number(res[1] * index) + "_" + ui->comboBox_Model->currentText() + "." + fo.suffix());
     }
-
     if ((index == 3 || index == 4) && (ui->comboBox_Denoise->currentIndex() == 2 || ui->comboBox_Denoise->currentIndex() == 3) && ui->comboBox_Engine->currentIndex() == 1) {
         QMessageBox msg(QMessageBox::Warning, "Warning!!!", "This denoise level is not supported!\n", QMessageBox::Ok);
         msg.setStyleSheet("QPushButton{height: 25px}");
@@ -162,11 +186,18 @@ void MainWindow::on_comboBox_Res_currentIndexChanged(int index) {
 }
 
 void MainWindow::on_comboBox_Fps_currentIndexChanged(int index) {
-    if (index == 0) {
-        if (ui->lineEdit_Fps->text().toDouble() > fps) ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Fps->text() + "FPS." + fo.suffix());
-    }
-    else {
-        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(fps * (index + 1), 'g', 2) + "FPS." + fo.suffix());
+    if (!customOutputFileName) {
+        if (index == 0) {
+            if (ui->lineEdit_Fps->text().toDouble() > fps) {
+                ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + ui->lineEdit_Fps->text() + "FPS_" + ui->comboBox_Model->currentText() + "." + fo.suffix());
+            }
+            else {
+                ui->comboBox_Fps->setCurrentText("x2");
+            }
+        }
+        else {
+            ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fi.completeBaseName() + "_" + QString::number(fps * (index + 1), 'f', 2) + "FPS_" + ui->comboBox_Model->currentText() + "." + fo.suffix());
+        }
     }
 }
 
@@ -181,6 +212,14 @@ void MainWindow::on_comboBox_Model_currentIndexChanged(int index) {
             ui->lineEdit_Fps->setEnabled(1);
             ui->comboBox_Fps->setEnabled(1);
         }
+    }
+    // Update the model name in output file name
+    QString fileName = fo.completeBaseName();
+    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    if (idx != -1) {
+        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName += ui->comboBox_Model->currentText();
+        ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
     }
 }
 

@@ -11,7 +11,7 @@ void MainWindow::dealWithInterpolatingErr() {
         if (load > 1) load--;
         if (proc > 1) proc--;
         if (save > 1) save--;
-        ui->lineEdit_Thread->setText(QString::number(load, 10) + ':' + QString::number(proc, 10) + ':' + QString::number(save, 10));
+        ui->lineEdit_Thread->setText(QString::number(load) + ':' + QString::number(proc) + ':' + QString::number(save));
     }
     else {
         state = "Stopped";
@@ -41,7 +41,7 @@ void MainWindow::dealWithUpscalingErr() {
         if (load > 2) load--;
         if (proc > 2) proc--;
         if (save > 2) save--;
-        ui->lineEdit_Thread->setText(QString::number(load, 10) + ':' + QString::number(proc, 10) + ':' + QString::number(save, 10));
+        ui->lineEdit_Thread->setText(QString::number(load) + ':' + QString::number(proc) + ':' + QString::number(save));
     }
     else if (TileSize > 256) {
         TileSize /= 2;
@@ -55,7 +55,7 @@ void MainWindow::dealWithUpscalingErr() {
         if (load > 1) load--;
         if (proc > 1) proc--;
         if (save > 1) save--;
-        ui->lineEdit_Thread->setText(QString::number(load, 10) + ':' + QString::number(proc, 10) + ':' + QString::number(save, 10));
+        ui->lineEdit_Thread->setText(QString::number(load) + ':' + QString::number(proc) + ':' + QString::number(save));
     }
     else if (TileSize > 0) {
         TileSize /= 2;

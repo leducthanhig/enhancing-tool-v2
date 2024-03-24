@@ -27,5 +27,7 @@
 - Add some tool tips
 - Fix some issues of the combo boxs
 
-21/03/2024
+24/03/2024
 - Optimize some features
+- Add feature to handle gif file
+- Fix some bugs
