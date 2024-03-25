@@ -101,7 +101,7 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
     }
     else { // Interpolating
         ui->comboBox_Engine->addItems(QStringList{ "RIFE-NCNN-Vulkan", "IFRNet-NCNN-Vulkan" });
-        ui->comboBox_Presets->addItems(QStringList{ "Fast but low quality", "Slow but high quality" });
+        ui->comboBox_Presets->addItems(QStringList{ "Fast and medium quality", "Slow and high quality" });
         ui->comboBox_Res->setCurrentIndex(0);
         setEnabled_Res(0);
         setEnabled_Segment(1);
@@ -118,9 +118,9 @@ void MainWindow::on_comboBox_Tool_currentIndexChanged(int index) {
     ui->comboBox_Presets->setCurrentIndex(0);
     // Update the model name in output file name
     QString fileName = fo.completeBaseName();
-    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    int idx = fileName.remove(fi.completeBaseName() + "_").indexOf('_');
     if (idx != -1) {
-        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName = fi.completeBaseName() + "_" + fileName.remove(fileName.sliced(idx + 1));
         fileName += ui->comboBox_Model->currentText();
         ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
     }
@@ -151,9 +151,9 @@ void MainWindow::on_comboBox_Engine_currentIndexChanged(int index) {
     }
     // Update the model name in output file name
     QString fileName = fo.completeBaseName();
-    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    int idx = fileName.remove(fi.completeBaseName() + "_").indexOf('_');
     if (idx != -1) {
-        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName = fi.completeBaseName() + "_" + fileName.remove(fileName.sliced(idx + 1));
         fileName += ui->comboBox_Model->currentText();
         ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
     }
@@ -215,9 +215,9 @@ void MainWindow::on_comboBox_Model_currentIndexChanged(int index) {
     }
     // Update the model name in output file name
     QString fileName = fo.completeBaseName();
-    int idx = fileName.sliced(fileName.indexOf('_') + 1).indexOf('_') + fileName.indexOf('_') + 1; // Find the second index of '_'
+    int idx = fileName.remove(fi.completeBaseName() + "_").indexOf('_');
     if (idx != -1) {
-        fileName = fileName.remove(fileName.sliced(idx + 1));
+        fileName = fi.completeBaseName() + "_" + fileName.remove(fileName.sliced(idx + 1));
         fileName += ui->comboBox_Model->currentText();
         ui->lineEdit_Output->setText(fo.absolutePath() + "/" + fileName + "." + fo.suffix());
     }

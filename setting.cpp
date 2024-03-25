@@ -81,7 +81,7 @@ void MainWindow::setRemaining(QTime startTime) {
         QString stage = str.sliced(str.indexOf(':') + 2, str.indexOf("...") - str.indexOf(":") - 2);
         double weight;  // Estimate: Upscaling = 6 Encoding, Encoding = 5 Decoding => 30 + 5 + 1 = 36;
         if (stage == "Decoding") weight = 1.0 / 36;
-        else if (stage == "Upscaling") weight = 31.0 / 36;
+        else if (stage == "Upscaling" || stage == "Interpolating") weight = 31.0 / 36;
         else if (stage == "Encoding") weight = 1;
         finished += weight * ui->progressBar->value() / 100.0;
         

@@ -118,6 +118,7 @@ void MainWindow::on_pushButton_Start_released() {
     ui->pushButton_Info->setEnabled(0);
     ui->groupBox_Setting->setEnabled(0);
     setVisible_ViewState(1);
+    setAcceptDrops(0);
 
     switch (ui->comboBox_Tool->currentIndex()) {
     case 0:
@@ -277,6 +278,7 @@ end:;
     msg.setStyleSheet("QPushButton{height: 25px}");
     msg.exec();
     
+    setAcceptDrops(1);
     setVisible_ViewState(0);
     ui->pushButton_Start->setVisible(1);
     ui->progressBar->setValue(0);
