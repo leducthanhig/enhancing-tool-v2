@@ -105,8 +105,10 @@ See [original](src/Realistic%20Photo%20-%20Original.jpg) and [upscaled](src/Real
 </p>
 
 ## ✅ Interpolation Samples
-**Model using: rife-v4.6**
-## Sample 1
+- Model using: rife-v4.6
+- Input: 23.98 fps
+- Output: 60 fps
+### Sample 1
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/c55735a8-1325-4bae-bd64-e075c81de2e3
@@ -115,7 +117,7 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/c55735a8-1325
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/d6852c2b-65db-4017-b1fe-1f1cf8aa4fcd
 
-## Sample 2
+### Sample 2
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/f443c52d-10ca-4bf8-b18d-a590ae426dd9
@@ -124,7 +126,7 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/f443c52d-10ca
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/048d45a4-548d-41e2-bc74-05c7b5aa72f3
 
-## Sample 3
+### Sample 3
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/8a982d04-49c3-4677-ae59-88de07d9ed26
@@ -133,16 +135,16 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/8a982d04-49c3
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/e83b46cd-8f37-401f-99a7-324f0cbeef45
 
-## Sample 4
+### Sample 4
 **Original**
-
-https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/191eb1d0-1ba8-4de6-a34d-258659a04fa0
-
-**Result**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/f8c9fa43-ca63-41a4-ae66-3f43c3ec55d0
 
-## Sample 5
+**Result**
+
+https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/191eb1d0-1ba8-4de6-a34d-258659a04fa0
+
+### Sample 5
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/04cfb897-3b16-47e4-9e2d-31e51b82f4c1
@@ -151,7 +153,7 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/04cfb897-3b16
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/a541819a-8b67-4293-b070-4f6dd8fcaec1
 
-## Sample 6
+### Sample 6
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/21408b9e-4903-4c88-9830-8ed32297d72d
@@ -160,7 +162,7 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/21408b9e-4903
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/0ae28071-94a6-4029-9a76-5f70681303e8
 
-## Sample 7
+### Sample 7
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/94ea3647-578c-4e45-b44b-7a5c0bf6c0f9
@@ -169,7 +171,7 @@ https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/94ea3647-578c
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/eeb4521a-724e-4232-b07f-b5762c2c805e
 
-## Sample 8
+### Sample 8
 **Original**
 
 https://github.com/leducthanhig/enhancing-tool-v2/assets/162028415/d558d3e5-3d0f-435a-a225-37ea0bd240c4
